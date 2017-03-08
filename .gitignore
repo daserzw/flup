@@ -1,0 +1,8 @@
+# emacs
+*~
+
+# vi
+*.swp
+
+# Compiled python modules
+*.pyc

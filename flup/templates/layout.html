@@ -1,0 +1,42 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}
+{% endblock%}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container">
+  {% if message %}
+  <div class="alert alert-info alert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>{{ message|safe }}</strong>
+  </div>
+  {% endif %}
+</div>
+<div class="container">
+  {% if error %}
+  <div class="alert alert-danger alert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>{{ error|safe }}</strong>
+  </div>
+  {% endif %}
+</div>
+{% block main %}
+{% endblock %}
+{% block footer %}
+<div class="container">
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+	<a class="footer-font"  href="https://URL/">
+	  NOME ISTITUZIONE
+	</a>
+      </div>
+    </div>
+  </footer>
+</div>
+{% endblock %}
+{% endblock %}
+
