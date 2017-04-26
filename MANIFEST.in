@@ -1,0 +1,2 @@
+graft flup/templates
+graft flup/static

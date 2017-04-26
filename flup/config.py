@@ -11,13 +11,13 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'data/app.db')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # SECRET_KEY
-SECRET_KEY = 'bMOB7eu7oGm2tqVujB1F5oXk9v+/12e9WEjaLt3Gpt8='
+SECRET_KEY = 'a secret key'
 
 # SESSION SECURE COOKIE
 SESSION_COOKIE_SECURE = True
 
 # LDAP
-LDAPURI = 'ldap://'
-BINDDN = 'cn=admin,dc=irccs,dc=it'
-BINDPW = 'ciaoldap'
-BASEDN = 'dc=irccs,dc=it'
+LDAPURI = ''
+BINDDN = ''
+BINDPW = ''
+BASEDN = ''

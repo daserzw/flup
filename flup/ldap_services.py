@@ -11,7 +11,7 @@ class Ldapconn():
     PROVIDER = True
     CONSUMER = False
     
-    def __init__(self, LDAPURI, BINDDN, BINDPW, BASEDN, is_a_provider):
+    def __init__(self, LDAPURI, BINDDN, BINDPW, BASEDN, is_a_provider=True):
         if is_a_provider:
             self.__dict__ = self.__provider_shared_state
         else:
@@ -66,21 +66,22 @@ class Ldapconn():
 ## Methods for user login, user search, and password modify
 
 def ldap_login(username, password):
-    ldapconn = LdapConn(
+    ldapconn = Ldapconn(
         app.config['LDAPURI'],
         app.config['BINDDN'],
         app.config['BINDPW'],
         app.config['BASEDN']
     )
-    search_result = self.ldapobj.search_s(
-        self.BASEDN,
-        ldap.SCOPE_BASE,
-        '(uid=username)'
+    ldapobj = ldapconn.getLdapconn()
+    search_result = ldapobj.search_s(
+        ldapconn.BASEDN,
+        ldap.SCOPE_SUBTREE,
+        '(uid=%s)' % username
     )
     if search_result:
         (user_dn, ldapentry) = search_result[0]
         try:
-            user_ldapconn = LdapConn(
+            user_ldapconn = Ldapconn(
                 app.config['LDAPURI'],
                 user_dn,
                 password,
@@ -91,4 +92,3 @@ def ldap_login(username, password):
             return None
     return None
 
-    
