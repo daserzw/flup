@@ -11,13 +11,20 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'data/app.db')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # SECRET_KEY
-SECRET_KEY = 'a secret key'
+SECRET_KEY = 'fdadfetre82302394839u0dsfomdovkn23er124'
 
 # SESSION SECURE COOKIE
-SESSION_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
+
 
 # LDAP
-LDAPURI = ''
-BINDDN = ''
-BINDPW = ''
-BASEDN = ''
+LDAPURI = 'ldap://idp.example.org'
+BINDDN = 'cn=admin,dc=example,dc=org'
+BINDPW = 'password'
+BASEDN = 'dc=example,dc=org'
+
+# BABEL
+
+SUPPORTED_LANGUAGES = {'it': 'Italian', 'en': 'English'}
+BABEL_DEFAULT_LOCALE = 'it'
+BABEL_DEFAULT_TIMEZONE = 'Europe/Rome'

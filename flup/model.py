@@ -1,19 +1,24 @@
+import uuid
 from flup import db
+from flask_login import UserMixin
 
-class User():
+class User(UserMixin):
 
-    def __init__(self, userdn):
-        self.userdn = userdn
+    def __init__(self, id, givenName, sn, mail):
+        self.id = id
+        self.givenName = givenName
+        self.sn = sn
+        self.mail = mail
 
-    def get_id(self):
-        return userdn
+class Token(db.Model):
 
-    def is_active(self):
-        return True
+    id = db.Column(db.Integer, primary_key = True)
+    value = db.Column(db.String(36))
+    user_id = db.Column(db.String(255))
+    
+    def __init__(self, user_id):
+        self.value = str(uuid.uuid(4))
+        self.user_id = user_id
 
-    def is_anonymous(self):
-        return False
-
-    def is_authenticated(self):
-        return True
-
+    def __repr__(self):
+        return self.value

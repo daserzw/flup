@@ -1,0 +1,46 @@
+<div class="content">
+  <div class="column one">
+    <form action="/" method="post">
+            {{ form.csrf_token }}
+      <div class="form-element-wrapper">
+	{{ form.username.label }}
+	{{ form.username(class_="form-control form-control-danger") }}
+	{% if form.username.errors %}
+	{% for error in form.username.errors %}
+	<span class="text-danger">{{ error }}</span>
+	{% endfor %}
+	{% endif %}
+      </div>
+      <div class="form-element-wrapper">
+	{{ form.password.label }}
+	{{ form.password(class_="form-control form-control-danger") }}
+	{% if form.password.errors %}
+	{% for error in form.password.errors %}
+	<span class="text-danger">{{ error }}</span>
+	{% endfor %}
+	{% endif %}
+      </div>
+      <div class="form-element-wrapper">
+	<button type="submit" class="form-element form-button">Login</button>
+      </div>
+    </form>
+    <div class="column two col-sm-4">
+    <ul class="list list-help">
+      <li class="list-help-item"><a href="/pw/changepw.php"><span class="item-marker">&rsaquo;</span> Dimenticata la password?</a></li>
+      <li class="list-help-item"><a href="mailto:idpcloud-service@garr.it"><span class="item-marker">&rsaquo;</span> Serve aiuto?</a></li>
+      <li class="list-help-item"><a href="https://garr-idp-test.irccs.garr.it/idp/info.html"><span class="item-marker">&rsaquo;</span> Pagina di informazioni</a></li>
+      <li class="list-help-item"><a href="https://garr-idp-test.irccs.garr.it/idp/privacy.html"><span class="item-marker">&rsaquo;</span> Privacy Policy</a></li>
+    </ul>
+
+    <p>
+      
+      <a href="javascript:setParam('language', 'it');"><img height="16px" src="/idp/images/itFlag.png"></a>
+      
+      <a href="javascript:setParam('language', 'en');"><img height="16px" src="/idp/images/enFlag.png"></a>
+    </p>
+    <p>
+      <a href="http://www.idem.garr.it"><img src="/idp/images/IDEM_logo.png" alt="IDEM" style="width: 100px"/></a>
+    </p>
+  </div>
+</div>
+

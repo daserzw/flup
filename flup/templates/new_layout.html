@@ -1,0 +1,129 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}
+{% endblock%}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script language="javascript">
+    
+function setParam(name, value) {
+      var l = window.location;
+      /* build params */
+      var params = {};
+      var x = /(?:\??)([^=&?]+)=?([^&?]*)/g;
+      var s = l.search;
+      for(var r = x.exec(s); r; r = x.exec(s)) {
+          r[1] = decodeURIComponent(r[1]);
+          if (!r[2]) r[2] = '%%';
+          params[r[1]] = r[2];
+      }
+      /* set param */
+      params[name] = encodeURIComponent(value);
+      /* build search */
+      var search = [];
+      for(var i in params) {
+          var p = encodeURIComponent(i);
+          var v = params[i];
+          if (v != '%%') p += '=' + v;
+          search.push(p);
+      }
+      search = search.join('&');
+      /* execute search */
+      l.search = search;
+  }
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+    var results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+function check_epb() {
+    var cookiestring = RegExp("epb[^;]+").exec(document.cookie);
+    var value = unescape(!!cookiestring ? cookiestring.toString().replace(/^[^=]+./,"") : "");
+    if (value == "ok") {
+        document.getElementById('epb-notice').style.display = 'none';
+    }
+}
+function hide_epb() {
+    document.cookie = "epb=ok; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+    document.getElementById('epb-notice').style.display = 'none';
+}
+function show_policy() {
+    el = document.getElementById("overlay");
+    el.style.display = (el.style.display == "none") ? "block" : "none";
+}
+</script>
+{% endblock %}
+{% block content %}
+
+<div id="overlay" style="display: none">
+  <div>
+    <h1>Policy dei Cookie per l'IdP di IDP in the Cloud Project (GARR)</h1>
+    <h2>Cosa sono i Cookie</h2>
+    <p>Come &egrave; pratica comune di quasi tutti i siti professionali, questo sito usa i cookies, che sono picocli file che vengono scaricati sul tuo computer per migliorare la tua esperienza di utilizzo del sito. Questa pagina descrive le informazioni che sono raccolte dai cookie di questo sito, come questi cookie vengono utilizzati e come mai il nostro sito ha la necessit&agrave; di memorizzarli. Ti mostreremo anche come ti &egrave; possibile impedire che questi cookie vengano memorizzati, anche se questo potrebbe diminuire o 'rompere' alcuni elementi e funzionalit&agrave; del sito.</p>
+    <p>Per informazioni generali sui cookie, &egrave; possibile visitare l'articolo di Wikipedia sugli HTTP Cookies...</p>
+    <h2>Come utilizziamo i Cookie</h2>
+    <p>Noi usiamo i cookie per una serie di motivi, descirtti nel seguito. Sfortunatamente in molti casi non esistono opzioni che siano standard industruali per disabilitare i cookie senza disabilitare complitamente la funzionalit&agrave; e le caratteristiche che essi aggiungono al sito. &Egrave; quindi preferibile che tu lasci tutti i cookie attiviti se non sei sicuro di se ti servano o meno e se questi cookie servono ad offrire il servizio che desideri utilizzare.</p>
+    <h2>Disabilitare i Cookie</h2>
+    <p>Puoi eliminare la memorizzazione di cookie modificando opportunamente le configurazioni del tuo browser web (fai rifemimento all'Help del tuo browser per sapere come fare). Presta attenzione per&ograve; al fatto che disabilitare i cookie avr&agrave; un effetto sulle funzionalit&agreve; di questo ed altri siti web che vorrai visitare. Disabilitare i cookie significher&agreve; probabilmente disabilitare certe funzionalit&agrave; e caratteristiche di questo sito web. Quindi non &egrave; consigliato che tu disabiliti i cookie.</p>
+    <h2>I Cookie che settiamo</h2>
+    <p>Se crei un account con noi, allora utilizzeremo i cookie per gestire il processo di login e accesso, oltre che per l'amministrazione generale. Questi cookie vengono solitamente cancellati dopo l'operazione di logout, tuttavia in alcuni casi essi possono rimanere anche oltre per memorizzare le tue preferenze sul sito, anche dopo il logout.</p>
+    <p>Utilizziamo cookie quando accedi al nostro sito per poter ricordare il tuo avvenuto accesso. Questo rimuove la necessit&agrave per te di dove fare login ogni singola volta che visiti una pagina web. Questi cookie sono solitamente rimossi o cancellati quando fai logout per garantire il fatto che tu possa accedere alle funzionalit&agrave e aree del del sito ristrette solo quando sei loggato.</p>
+    <p><br/></p>
+    <p>Quando invii dati attraverso una form, come quelle che si possono trovare nelle pagine di contatto o nelle form per i commenti, dei cookie possono essere impostati per ricordare i tuoi dettagli utente per futuri scambi di corrispondenza.</p>
+    <h2>Cookie di Terze Parti</h2>
+    <p>In alcuni casi speciali, utilizziamo anche cookie forniti da terze parti fidate. Questa sezione dettaglia quali cookie di terze parti potranno essere incontrati durante la navigazione in questo sito.</p>
+    <p>Strumenti di analisi di terze parti sono utilizzati per tenere traccia e misurare l'utilizzod i questo sito in modo che ci sia possibile continuare a produrre contenuti attraenti. Questi cookie possono tracciare alcune cose quali ad esempio quanto tempo spendi sul sito o quali pagine visiti. Queste informazioni ci aiutano a capire come potremmo migliorare questo sito per te.</p>
+    <h2>Informazioni aggiuntive</h2>
+    <p>Ci auguriamo che queste spiegazioni abbiamo chiarificato gli aspetti significativi della gestione cookie per te e, come &egrave; stato precedentemente detto, se c'&egrave; qualcosa di cui non sei sicuro se ti serva o meno, &egrave; solitamente pi&ugrave; sicuro lasciare i cookia abilitati per evitare che la disabiltiazione interagisca con una delle funzionalit&agrave; che utilizzi nel nostro sito. Ad ogni modo, se stai ancora cercando ulteriori informazioni puoi contattarci attraverso uno dei nostri metodi preferiti.</p>
+    <p>Email: mailto:idpcloud-service@garr.it</p>
+    <p><br/></p>
+    <p><center><a href='#' onclick='show_policy(); return false'>Clicca qui per chiudere</a></center></p>
+  </div>
+</div>
+<div class="wrapper">
+  <div id="epb-notice">I cookie ci aiutano a fornire i nostri servizi. Utilizzando tali servizi, accetti l'utilizzo dei cookie da parte nostra. <a href="#" onclick="show_policy(); return false">Maggiori informazioni qui.</a> <a href="#" onclick="hide_epb(); return false">Chiudi.</a>
+  </div>
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    {% if category == 'error' %}
+    {% set css_class = 'alert alert-danger alert-dismissible' %} 
+    {% else %}
+    {% set css_class = 'alert alert-info alert-dismissible' %}
+    {% endif %}
+    <div class="{{ css_class }}">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>{{ message|safe }}</strong>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div>
+  {% if current_user.is_authenticated %}
+  <div class="container">
+    <p class="text-right">Hi {{ current_user.givenName }}! | <a href="{{url_for('logout')}}">Logout</a></p>
+  </div>
+  {% endif %}
+  <div class="container">
+    <header>
+      <a href="{{ idp_info_url}}"><img src="{{ idp_logo }}" alt="{{ idp_org_name }}" height="170px" /></a>
+    </header>
+
+  {% block main %}
+  {% endblock %}
+  </div>
+  {% block footer %}
+  <footer>
+    <div class="container container-footer">
+      <p class="footer-text">Footer text</p>
+    </div>
+  </footer>
+</div>
+{% endblock %}
+{% endblock %}
+

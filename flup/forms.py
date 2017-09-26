@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, InputRequired, EqualTo
 
-class PasswordForm(FlaskForm):
+class NewPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[
         InputRequired(),
         EqualTo('confirm_password', message='Passwords must match')
@@ -13,5 +13,9 @@ class PasswordForm(FlaskForm):
     )
 
 class LoginForm(FlaskForm):
-    username = StringField('username', validators=[DataRequired()])
-    password = PasswordField('password', validators=[InputRequired()])
+    username = StringField('username', 
+                           validators=[DataRequired()]
+    )
+    password = PasswordField('password', 
+                             validators=[DataRequired()]
+    )

@@ -48,5 +48,5 @@ class Ldapconn():
         
     def disconnect(self):
        self.ldapobj = None
-
+       
 

@@ -31,7 +31,7 @@ class Ldapconn():
                 pass
 #                app.logger.error('LDAPError desc: %s; info: %s' % e.desc, e.info)
  
-    def getLdapconn(self):
+    def getLdapobj(self):
         if self.ldapobj == None:
             self.connect()
         if not self.checkConnection():
@@ -58,37 +58,33 @@ class Ldapconn():
                 pass
         return None
         
-        
     def disconnect(self):
-        self.ldapobj = None
+       self.ldapobj = None
 
+
+class Ldapservice(Ldapconn):
     
-## Methods for user login, user search, and password modify
-
-def ldap_login(username, password):
-    ldapconn = Ldapconn(
-        app.config['LDAPURI'],
-        app.config['BINDDN'],
-        app.config['BINDPW'],
-        app.config['BASEDN']
-    )
-    ldapobj = ldapconn.getLdapconn()
-    search_result = ldapobj.search_s(
-        ldapconn.BASEDN,
-        ldap.SCOPE_SUBTREE,
-        '(uid=%s)' % username
-    )
-    if search_result:
-        (user_dn, ldapentry) = search_result[0]
-        try:
-            user_ldapconn = Ldapconn(
-                app.config['LDAPURI'],
-                user_dn,
-                password,
-                app.config['BASEDN']
-            )
+    def get_userdn(username):
+        ldapobj = getLdapobj(self)
+        search_result = ldapobj.search_s(
+            ldapconn.BASEDN,
+            ldap.SCOPE_SUBTREE,
+            '(uid=%s)' % username
+        )
+        if search_result:
+            (user_dn, ldapentry) = search_result[0]
             return user_dn
+        return None
+                
+    def change_userpw(userdn, oldpw, newpw):
+        ldapobj = getLdapobj(self)
+        ldapobj.passwd_s(userdn, oldpw, newpw)
+
+    def user_bind(username, password):
+        userdn = get_userdn(username)
+        user_ldapobj = ldap.initialize(self.LDAPURI)
+        try:
+            user_ldapobj.bind_s(userdn, password, ldap.AUTH_SIMPLE)
         except ldap.INVALID_CREDENTIALS:
             return None
-    return None
-
+        return userdn

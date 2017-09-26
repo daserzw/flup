@@ -1,8 +1,18 @@
 import ldap
-from ldapconn import Ldapconn
 from model import User
 
-class Ldapservice(Ldapconn):
+class Ldapservice():
+
+    def __init__(self, get_ldapobj_f, LDAPURI, BASEDN):
+        self.get_ldapobj_f = get_ldapobj_f
+        self.BASEDN = BASEDN
+        self.LDAPURI = LDAPURI
+
+    def getLdapobj(self):
+        return self.get_ldapobj_f()
+
+    def setLdapobj(self, ldapobj):
+        self.ldapobj = ldapobj
 
     def get_user_by_dn(self, userdn):
         ldapobj = self.getLdapobj()
@@ -29,10 +39,9 @@ class Ldapservice(Ldapconn):
     def _load_user(self, search_result):
         (userdn, ldapentry) = search_result
         return User(userdn, 
-                    ldapentry['givenName'],
-                    ldapentry['sn'],
-                    ldapentry['mail']
-
+                    ' '.join(ldapentry['givenName']),
+                    ' '.join(ldapentry['sn']),
+                    ldapentry['mail'][0]
         )
         
         
@@ -55,9 +64,9 @@ class Ldapservice(Ldapconn):
             return userdn
         return None
                 
-    def change_userpw(self, user, oldpw, newpw):
+    def change_userpw(self, user, newpw):
         ldapobj = self.getLdapobj()
-        ldapobj.passwd_s(user.id, oldpw, newpw)
+        ldapobj.passwd_s(user.id, None, newpw)
 
     def user_bind(self, userdn, password):
         user_ldapobj = ldap.initialize(self.LDAPURI)
