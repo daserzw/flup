@@ -3,7 +3,7 @@ import os
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
 # DEBUG
-DEBUG = True
+DEBUG = False
 TRAP_BAD_REQUEST_ERRORS = True
 
 # DB
@@ -28,3 +28,12 @@ BASEDN = 'dc=example,dc=org'
 SUPPORTED_LANGUAGES = {'it': 'Italian', 'en': 'English'}
 BABEL_DEFAULT_LOCALE = 'it'
 BABEL_DEFAULT_TIMEZONE = 'Europe/Rome'
+
+# HOSTNAME
+
+IDP_BASE_URL = 'https//127.0.0.1:5000/'
+
+# MAIL
+
+MAIL_SERVER = 'localhost'
+MAIL_DEFAULT_SENDER = 'noreply@localhost'
