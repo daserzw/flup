@@ -1,0 +1,14 @@
+{% extends "/layout.html" %} {% block main %}
+<div class="content">
+  <div class="panel-body text-center">
+    <h1>{{ _("Page not found") }}</h1>
+    <h2>{{ _("The server was unable to find the requested page.") }}</h2>
+    <p>{{ _("The requested page does not exist, go back to" ) }}
+      <a href="{{ url_for('index') }}">
+	{{ _("home page") }}
+      </a>
+      .
+    </p>
+  </div>
+</div>
+{% endblock %}

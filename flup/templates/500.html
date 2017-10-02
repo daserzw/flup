@@ -1,0 +1,15 @@
+{% extends "/layout.html" %} {% block main %}
+<div class="content">
+  <div class="panel-body text-center">
+    <h1>{{ _("Internal Server Error") }}</h1>
+    <h2>{{ _("The server was unable to complet your request") }}</h2>
+    <h3>{{ _("Why did this happen?") }}</h3>
+    <ul>
+      <li>{{ _("The server could be too busy at the moment." ) }}</li>
+      <li>{{ _("The connection was resetted.")}}</li>
+      <li>{{ _("There was a temporary error, Try reloading the page.") }}</li>
+      <li>{{ _("If the problem persist contact the administrator.") }}</Li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
