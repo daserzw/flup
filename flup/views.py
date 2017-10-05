@@ -55,18 +55,21 @@ def reset_pw():
             db.session.add(token)
             db.session.commit()
             reset_url = app.config['IDP_BASE_URL'] + '/token_auth' + token.value
-            body = render_template('reset_password.j2', reset_url, idp_name)
+            body = render_template('reset_password.j2',
+                                   data={'reset_url':reset_url,
+                                         'idp_name':idp_name}
+            )
         try:
             send_mail(
                 email=[email],
                 subject="password reset",
-                body=body,
+                body=body
             )
         except Exception as e:
             # TODO: log exception
             abort(500)
         flash(gettext('Password reset mail sent!'), 'message') 
-    return render_template('change_pw.html', form=form)
+    return render_template('reset_pw.html', form=form)
 
 
 @app.route('/logout')

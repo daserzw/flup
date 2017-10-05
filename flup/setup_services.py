@@ -11,5 +11,3 @@ def recreate_db():
     click.echo('Drop the current DB and recreate it')
     db.drop_all()
     db.create_all()
-
-

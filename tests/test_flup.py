@@ -1,4 +1,3 @@
-
 import os, sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -8,7 +7,6 @@ import unittest
 import tempfile
 
 class FlupTestCase(unittest.TestCase):
-
 
     def setUp(self):
         self.app = flup.app.test_client()
