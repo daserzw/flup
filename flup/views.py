@@ -21,7 +21,6 @@ def index():
             flash(gettext('Invalid username or password'), 'error')
     return render_template('login.html', form=form)
 
-
 @app.route('/change_pw', methods=['GET', 'POST'])
 @login_required
 def change_pw():
@@ -71,7 +70,6 @@ def reset_pw():
         flash(gettext('Password reset mail sent!'), 'message') 
     return render_template('reset_pw.html', form=form)
 
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -84,10 +82,6 @@ def send_token():
     if email:
         token = model.Token()
         
-
 @app.route('/token_auth/<token>', methods=['GET'])
 def token_auth(token):
     pass
-
-
-
