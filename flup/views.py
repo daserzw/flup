@@ -1,8 +1,9 @@
-from flup import app, ldapservices, mail_services
+from flup import app, ldapservices, mail_services, db
 from flask import render_template, url_for, redirect, session, flash, abort
 from model import User
 from forms import LoginForm, NewPasswordForm, ResetPasswordEmailForm
 from flask_login import login_required, login_user, current_user, logout_user
+from flask_babel import gettext
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -12,7 +13,8 @@ def index():
             user = ldapservices.user_login(form.username.data, form.password.data)
         except Exception as e:
             # TODO: log exception
-            abort(500)
+            print e
+            # abort(500)
         if user:
             login_user(user)
             flash(gettext('You have successfully logged in'), 'message')
@@ -32,7 +34,8 @@ def change_pw():
             r = ldapservices.change_userpw(user, password)
         except Exception as e:
             # TODO: log exception
-            abort(500)
+            print e
+            #abort(500)
         if r:
             flash(gettext('Password changed successfully!'), 'message') 
         else: 
@@ -41,14 +44,16 @@ def change_pw():
 
 @app.route('/reset_pw', methods=['GET', 'POST'])
 def reset_pw():
-    form = NewResetPasswordEmailForm()
+    form = ResetPasswordEmailForm()
     if form.validate_on_submit():
         email = form.email.data
         try:
             user = ldapservices.get_user_by_email(email)
         except Exception as e:
             # TODO: log exception
-            abort(500)
+            print e
+            #abort(500)
+        body = ''
         if user:
             token = model.Token(user.id)
             db.session.add(token)
@@ -59,14 +64,15 @@ def reset_pw():
                                          'idp_name':idp_name}
             )
         try:
-            send_mail(
-                email=[email],
+            mail_services.send_mail(
+                recipients=[email],
                 subject="password reset",
                 body=body
             )
         except Exception as e:
             # TODO: log exception
-            abort(500)
+            print e
+            #abort(500)
         flash(gettext('Password reset mail sent!'), 'message') 
     return render_template('reset_pw.html', form=form)
 

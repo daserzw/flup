@@ -16,3 +16,6 @@ __pycache__
 
 # Python egg
 *.egg-info
+
+# SQLite
+*.db

@@ -3,7 +3,7 @@ import os
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
 # DEBUG
-DEBUG = False
+DEBUG = True
 TRAP_BAD_REQUEST_ERRORS = True
 
 # DB

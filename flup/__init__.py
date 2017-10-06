@@ -1,3 +1,4 @@
+import click
 from flask import Flask, g, render_template
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
@@ -51,3 +52,13 @@ def internal_server_error(e):
 
 from flup import views
 
+@app.cli.command()
+def create_db():
+    click.echo('Create the DB (None if the DB already exists.)')
+    db.create_all()
+
+@app.cli.command()    
+def recreate_db():
+    click.echo('Drop the current DB and recreate it')
+    db.drop_all()
+    db.create_all()
