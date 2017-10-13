@@ -39,7 +39,7 @@ def get_locale():
 
 @login_manager.user_loader
 def load_user(id):
-    return ldapservice.get_user_by_dn(id)
+    return ldapservices.get_user_by_dn(id)
 
 @app.errorhandler(404)
 def page_not_found(e):

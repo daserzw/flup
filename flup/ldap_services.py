@@ -25,6 +25,20 @@ class Ldapservice():
             return self._load_user(search_results[0])
         return None
 
+    def get_user_by_attr(self, attr, value, exact=False):
+        ldapobj = self.getLdapobj()
+        wildcard = '*'
+        if exact:
+            wildcard = ''
+        search_results = ldapobj.search_s(
+            self.BASEDN,
+            ldap.SCOPE_SUBTREE,
+            '(%s=%s%s%s)' % (attr, wildcard, value, wildcard)
+        )
+        if search_results:
+            return self._load_user(search_results[0])
+        return None
+    
     def get_user_by_uid(self, username):
         ldapobj = self.getLdapobj()
         search_results = ldapobj.search_s(
@@ -49,12 +63,14 @@ class Ldapservice():
 
     def _load_user(self, search_result):
         (userdn, ldapentry) = search_result
+        mail = None
+        if 'mail' in ldapentry:
+            mail = ldapentry['mail'][0]
         return User(userdn, 
                     ' '.join(ldapentry['givenName']),
                     ' '.join(ldapentry['sn']),
-                    ldapentry['mail'][0]
+                    mail
         )
-        
         
     def user_login(self, username, password):
         user = self.get_user_by_uid(username)

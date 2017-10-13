@@ -24,3 +24,6 @@ class ResetPasswordEmailForm(FlaskForm):
     email = StringField('Email',
                           validators=[InputRequired()])
 
+class ActivationsPUIDForm(FlaskForm):
+    spuid = StringField('CODICE FISCALE',
+                          validators=[InputRequired()])
