@@ -50,12 +50,12 @@ class Ldapservice():
             return self._load_user(search_results[0])
         return None
 
-    def get_user_by_email(self, email):
+    def get_user_by_mail(self, mail):
         ldapobj = self.getLdapobj()
         search_results = ldapobj.search_s(
             self.BASEDN,
             ldap.SCOPE_SUBTREE,
-            '(mail=%s)' % email
+            '(mail=%s)' % mail
         )
         if search_results:
             return self._load_user(search_results[0])
@@ -94,7 +94,20 @@ class Ldapservice():
     def change_userpw(self, user, newpw):
         ldapobj = self.getLdapobj()
         ldapobj.passwd_s(user.id, None, newpw)
-
+        return True
+        
+    def change_usermail(self, user, newmail):
+        ldapobj = self.getLdapobj()
+        mod_attrs = [(ldap.MOD_DELETE, 'mail', None)]
+        try:
+            ldapobj.modify_s(user.id, mod_attrs)
+        except Exception as e:
+            if e == ldap.NO_SUCH_ATTRIBUTE:
+                pass
+        mod_attrs = [(ldap.MOD_ADD, 'mail', [str(newmail)])]
+        ldapobj.modify_s(user.id, mod_attrs)
+        return True
+        
     def user_bind(self, userdn, password):
         user_ldapobj = ldap.initialize(self.LDAPURI)
         try:

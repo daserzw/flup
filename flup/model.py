@@ -15,11 +15,22 @@ class Token(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     value = db.Column(db.String(36))
     user_id = db.Column(db.String(255))
-    operation = db.Column(db.Integer)
     
     def __init__(self, user_id):
-        self.value = str(uuid.uuid(4))
+        self.value = str(uuid.uuid4())
         self.user_id = user_id
 
     def __repr__(self):
         return self.value
+
+class UserMail(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    email = db.Column(db.String(254))
+    user_id = db.Column(db.String(255))
+
+    def __init__(self, email, user_id):
+        self.email = email
+        self.user_id = user_id
+
+    def __repr__(self):
+        return (self.email, self.user_id)

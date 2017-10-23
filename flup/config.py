@@ -31,9 +31,10 @@ BABEL_DEFAULT_TIMEZONE = 'Europe/Rome'
 
 # HOSTNAME
 
-IDP_BASE_URL = 'https//127.0.0.1:5000/'
+IDP_BASE_URL = 'https//127.0.0.1:5000'
 
 # MAIL
 
 MAIL_SERVER = 'localhost'
 MAIL_DEFAULT_SENDER = 'davide.vaghetti@unipi.it'
+MAIL_SIGNATURE = 'MAIL_SIGNATURE'

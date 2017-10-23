@@ -1,7 +1,15 @@
-{% extends "/layout.html" %} {% block main %}
+{% extends "/layout.html" %}
+{% block head %}
+{{ super() }}
+<meta http-equiv="refresh" content="5; URL='{{ url_for('change_pw') }} '" />
+{% endblock %}
+{% block main %}
 <div class="content">
   <div class="column one">
-    <p>Hello {{ user.givenName }}</p>
+    <h2>{{ _("Account activation") }}</h2>
+    <p>{{ _("In five seconds you'll be redirected to a page to set up your password, or follow the link below 
+      if you do not want to wait.") }}</p>
+    <p><a href="{{ url_for('change_pw') }}">Set up your password</a></p>
   </div>
 </div>
 {% endblock %}

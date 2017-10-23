@@ -20,7 +20,7 @@ class LoginForm(FlaskForm):
                              validators=[InputRequired()]
     )
 
-class ResetPasswordEmailForm(FlaskForm):
+class EmailForm(FlaskForm):
     email = StringField('Email',
                           validators=[InputRequired()])
 

@@ -41,6 +41,10 @@ def get_locale():
 def load_user(id):
     return ldapservices.get_user_by_dn(id)
 
+@app.errorhandler(401)
+def page_not_found(e):
+    return render_template('401.html'), 401
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
