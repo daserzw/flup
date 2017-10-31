@@ -3,8 +3,6 @@
 {% endblock%}
 {% block head %}
 {{ super() }}
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script language="javascript">
@@ -60,31 +58,29 @@ function show_policy() {
 {% block content %}
 <div id="overlay" style="display: none">
   <div>
-    <h1>{{ _("Policy dei Cookie per l'IdP di IDP in the Cloud Project (GARR)") }}</h1>
-    <h2>{{ _("Cosa sono i Cookie") }}</h2>
-    <p>{{ _("Come &egrave; pratica comune di quasi tutti i siti professionali, questo sito usa i cookies, che sono piccoli file che vengono scaricati sul tuo computer per migliorare la tua esperienza di utilizzo del sito. Questa pagina descrive le informazioni che sono raccolte dai cookie di questo sito, come questi cookie vengono utilizzati e come mai il nostro sito ha la necessit&agrave; di memorizzarli. Ti mostreremo anche come ti &egrave; possibile impedire che questi cookie vengano memorizzati, anche se questo potrebbe diminuire o 'rompere' alcuni elementi e funzionalit&agrave; del sito.") }}</p>
-    <p>{{ _("Per informazioni generali sui cookie, &egrave; possibile visitare l'articolo di Wikipedia sugli HTTP Cookies...") }}</p>
-    <h2>{{ _("Come utilizziamo i Cookie") }}</h2>
-    <p>{{ _("Noi usiamo i cookie per una serie di motivi, descirtti nel seguito. Sfortunatamente in molti casi non esistono opzioni che siano standard industruali per disabilitare i cookie senza disabilitare complitamente la funzionalit&agrave; e le caratteristiche che essi aggiungono al sito. &Egrave; quindi preferibile che tu lasci tutti i cookie attiviti se non sei sicuro di se ti servano o meno e se questi cookie servono ad offrire il servizio che desideri utilizzare.") }}</p>
-    <h2>{{ _("Disabilitare i Cookie") }}</h2>
-    <p>{{ _("Puoi eliminare la memorizzazione di cookie modificando opportunamente le configurazioni del tuo browser web (fai rifemimento all'Help del tuo browser per sapere come fare). Presta attenzione per&ograve; al fatto che disabilitare i cookie avr&agrave; un effetto sulle funzionalit&agreve; di questo ed altri siti web che vorrai visitare. Disabilitare i cookie significher&agreve; probabilmente disabilitare certe funzionalit&agrave; e caratteristiche di questo sito web. Quindi non &egrave; consigliato che tu disabiliti i cookie.") }}</p>
-    <h2>{{ _("I Cookie che settiamo") }}</h2>
-    <p>{{ _("Se crei un account con noi, allora utilizzeremo i cookie per gestire il processo di login e accesso, oltre che per l'amministrazione generale. Questi cookie vengono solitamente cancellati dopo l'operazione di logout, tuttavia in alcuni casi essi possono rimanere anche oltre per memorizzare le tue preferenze sul sito, anche dopo il logout.") }}</p>
-    <p>{{ _("Utilizziamo cookie quando accedi al nostro sito per poter ricordare il tuo avvenuto accesso. Questo rimuove la necessit&agrave per te di dove fare login ogni singola volta che visiti una pagina web. Questi cookie sono solitamente rimossi o cancellati quando fai logout per garantire il fatto che tu possa accedere alle funzionalit&agrave e aree del del sito ristrette solo quando sei loggato.") }}</p>
-    <p><br/></p>
-    <p>{{ _("Quando invii dati attraverso una form, come quelle che si possono trovare nelle pagine di contatto o nelle form per i commenti, dei cookie possono essere impostati per ricordare i tuoi dettagli utente per futuri scambi di corrispondenza.") }}</p>
-    <h2>{{ _("Cookie di Terze Parti") }}</h2>
-    <p>{{ _("In alcuni casi speciali, utilizziamo anche cookie forniti da terze parti fidate. Questa sezione dettaglia quali cookie di terze parti potranno essere incontrati durante la navigazione in questo sito.") }}</p>
-    <p>{{ _("Strumenti di analisi di terze parti sono utilizzati per tenere traccia e misurare l'utilizzod i questo sito in modo che ci sia possibile continuare a produrre contenuti attraenti. Questi cookie possono tracciare alcune cose quali ad esempio quanto tempo spendi sul sito o quali pagine visiti. Queste informazioni ci aiutano a capire come potremmo migliorare questo sito per te.") }}</p>
-    <h2>{{ _("Informazioni aggiuntive") }}</h2>
-    <p>{{ _("Ci auguriamo che queste spiegazioni abbiamo chiarificato gli aspetti significativi della gestione cookie per te e, come &egrave; stato precedentemente detto, se c'&egrave; qualcosa di cui non sei sicuro se ti serva o meno, &egrave; solitamente pi&ugrave; sicuro lasciare i cookia abilitati per evitare che la disabiltiazione interagisca con una delle funzionalit&agrave; che utilizzi nel nostro sito. Ad ogni modo, se stai ancora cercando ulteriori informazioni puoi contattarci attraverso uno dei nostri metodi preferiti.") }}</p>
-    <p>Email: mailto:idpcloud-service@garr.it</p>
+    <h1>{{ _("Policy dei cookie per questo sito") }}</h1>
+    <h2>{{ _("Cosa sono i cookie") }}</h2>
+    <p>{{ _("Questo sito usa i cookie, che sono piccoli file che vengono memorizzati sul tuo computer tramite il browser.") }}</p>
+    <p>{{ _("Per informazioni generali sui cookie, &egrave; vedi") }}
+        <a href="https://it.wikipedia.org/wiki/Cookie"> {{ _("l'articolo di Wikipedia sui cookie HTTP.") }}</a>
+    </p>
+    <h2>{{ _("Come utilizziamo i cookie") }}</h2>
+    <p>{{ _("Usiamo i cookie esclusivamente per gestire l'accesso al sito.") }}</p>
+    <h2>{{ _("Disabilitare i cookie") }}</h2>
+    <p>{{ _("Puoi eliminare la memorizzazione di cookie modificando opportunamente le configurazioni del tuo browser web,
+    ma alcune funzionalità del sito non saranno più disponibili.") }}</p>
+    <h2>{{ _("Terze parti") }}</h2>
+    <p>{{ _("Non trasmettiamo i nostri cookie a nessuna terza parte.") }}</p>
+    <p>Email: <a href="mailto:idpcloud-service@garr.it">idpcloud-service@garr.it</a></p>
     <p><br/></p>
     <p><center><a href='#' onclick='show_policy(); return false'>{{ _('Clicca qui per chiudere') }}</a></center></p>
   </div>
 </div>
 <div class="wrapper">
-  <div id="epb-notice">{{ _("I cookie ci aiutano a fornire i nostri servizi. Utilizzando tali servizi, accetti l'utilizzo dei cookie da parte nostra.") }}<a href="#" onclick="show_policy(); return false">{{ _("Maggiori informazioni qui.") }}</a> <a href="#" onclick="hide_epb(); return false">{{ _("Chiudi") }}.</a>
+  <div id="epb-notice">
+      {{ _("Utilizzando i servizi di questo sito, accetti anche l'utilizzo dei cookie. ") }}
+      <a href="#" onclick="show_policy(); return false">{{ _("Maggiori informazioni qui.") }}</a>
+      <a href="#" onclick="hide_epb(); return false">{{ _("Chiudi") }}.</a>
   </div>
   <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}

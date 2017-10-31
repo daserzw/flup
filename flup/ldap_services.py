@@ -1,5 +1,6 @@
 import ldap
 from model import User
+from flup import app
 
 class Ldapservice():
 
@@ -66,7 +67,9 @@ class Ldapservice():
         mail = None
         if 'mail' in ldapentry:
             mail = ldapentry['mail'][0]
-        return User(userdn, 
+        app.logger.debug("ldapentry: %s", ldapentry)
+        return User(userdn,
+                    ldapentry['uid'][0],
                     ' '.join(ldapentry['givenName']),
                     ' '.join(ldapentry['sn']),
                     mail

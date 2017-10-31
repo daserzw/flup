@@ -4,8 +4,9 @@ from flask_login import UserMixin
 
 class User(UserMixin):
 
-    def __init__(self, id, givenName, sn, mail):
+    def __init__(self, id, uid, givenName, sn, mail):
         self.id = id
+        self.uid = uid
         self.givenName = givenName
         self.sn = sn
         self.mail = mail

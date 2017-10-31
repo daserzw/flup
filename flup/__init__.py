@@ -6,7 +6,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_babel import Babel
 from ldapconn import Ldapconn
+import logging
 
+log_formatter = logging.Formatter(
+    '[%(asctime)s] %(levelname)s in %(module)s.%(funcName)s [%(pathname)s:%(lineno)d]: %(message)s'
+)
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 app.config.from_object('flup.config')
@@ -21,6 +25,8 @@ ldapconn = Ldapconn(
     app.config['BINDPW'],
     app.config['BASEDN']
 )
+for handler in app.logger.handlers:
+    handler.setFormatter(log_formatter)
 
 from ldap_services import Ldapservice
 

@@ -1,0 +1,18 @@
+{% extends "/layout.html" %} {% block main %}
+<div class="content">
+  <div class="column one">
+    <h2>Dati Utente</h2>
+      <ul>
+        <li>Nome: {{ user.givenName }}</li>
+        <li>Cognome: {{ user.sn }}</li>
+        <li>Email: {{ user.mail }}</li>
+        <li>Nome utente: {{ user.uid }}</li>
+      </ul>
+    <h2>Operazioni</h2>
+      <ul>
+        <li><a href="">Cambio password</a></li>
+        <li><a href="">Modifica email</a></li>
+      </ul>
+  </div>
+</div>
+{% endblock %}

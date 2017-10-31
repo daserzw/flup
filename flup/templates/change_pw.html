@@ -1,6 +1,7 @@
 {% extends "/layout.html" %} {% block main %}
 <div class="content">
   <div class="column one">
+      <h2>Imposta una nuova password</h2>
     <form method="POST" action="/change_pw">
       {{ form.csrf_token }}
       <div class="form-element-wrapper">
@@ -21,7 +22,7 @@
 	{% endfor %}
 	{% endif %}
       </div>
-      <button type="submit" class="form-element form-button">Change password</button>
+      <button type="submit" class="form-element form-button">Cambia password</button>
     </form>
   </div>
 </div>

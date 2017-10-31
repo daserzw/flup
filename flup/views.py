@@ -1,48 +1,51 @@
+# coding=utf-8
 from flup import app, ldapservices, mail_services, db
-from flask import render_template, url_for, redirect, session, flash, abort, request
-from model import User, Token, UserMail
+from flask import render_template, url_for, redirect, flash, abort, request, g
+from model import Token, UserMail, User
 from forms import LoginForm, NewPasswordForm, EmailForm, ActivationsPUIDForm
 from flask_login import login_required, login_user, current_user, logout_user
 from flask_babel import gettext
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = LoginForm()
+    username = form.username.data
+    user = None
     if form.validate_on_submit():
         try:
             user = ldapservices.user_login(form.username.data, form.password.data)
         except Exception as e:
-            # TODO: log exception
-            print e
-            # abort(500)
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
         if user:
             login_user(user)
-            flash(gettext('You have successfully logged in'), 'message')
-            return redirect(url_for('change_pw'))
+            app.logger.info('Login: username %s', username)
+            return render_template('user_menu.html', user=user)
         else:
-            flash(gettext('Invalid username or password'), 'error')
+            flash(gettext('Nome utente o password invalide.'), 'error')
+            app.logger.info('Login failed: username %s', username)
     return render_template('login.html', form=form)
+
 
 @app.route('/change_pw', methods=['GET', 'POST'])
 @login_required
 def change_pw():
+    app.logger.debug('change_pw requested')
     next_url = request.args.get('next_url')
     form = NewPasswordForm()
     if form.validate_on_submit():
-        user = current_user
+        user = User(current_user)
         password = form.password.data
         try:
             r = ldapservices.change_userpw(user, password)
         except Exception as e:
-            # TODO: log exception
-            print e
-            #abort(500)
-        if r:
-            flash(gettext('Password changed successfully!'), 'message')
-            if next_url:
-                return render_template(url_for(next_url))
-        else: 
-            flash(gettext('Something went wrong...'), 'error') 
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
+        flash(gettext('Password modificata con successo.'), 'message')
+        app.logger.info('Password changed: username %s', user.uid)
+        if next_url:
+            return render_template(url_for(next_url))
     return render_template('change_pw.html', form=form)
 
 
@@ -51,19 +54,33 @@ def reset_pw():
     form = EmailForm()
     if form.validate_on_submit():
         email = form.email.data
+        user = None
         try:
             user = ldapservices.get_user_by_mail(email)
         except Exception as e:
-            # TODO: log exception
-            print e
-            #abort(500)
-        body = ''
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
         if user:
-            if send_mail_op(user, 'IDP Reset password' , 'change_pw'):
-                flash(gettext('Password reset mail sent!'), 'message')
-        else:
-            flash(gettext('Sorry, no user by that mail, try again.'), 'error')
+            app.logger.info(
+                'Password reset requested: username %s, mail %s',
+                user.uid,
+                email
+            )
+            if send_mail_op(user, 'IDP Reset password', 'change_pw'):
+                flash(gettext('Messaggio di reset inviato.'), 'message')
+                app.logger.info(
+                    'Password reset sent: username %s, mail %s',
+                    user.uid,
+                    email
+                )
+            else:
+                flash(gettext('Email non valida.'), 'error')
+                app.logger.info(
+                    'Password reset failed: mail %s',
+                    email
+                )
     return render_template('reset_pw.html', form=form)
+
 
 @app.route('/activation', methods=['GET', 'POST'])
 def activation():
@@ -71,18 +88,23 @@ def activation():
     if form.validate_on_submit():
         spuid = form.spuid.data
         user = None
-        #        try:
-        user = ldapservices.get_user_by_attr('schacPersonalUniqueID', spuid)
-        #        except Exception as e:
-        # TODO: log exception
-        #    print e
-        #abort(500)
+        try:
+            user = ldapservices.get_user_by_attr('schacPersonalUniqueID', spuid)
+        except Exception as e:
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
         if user:
             login_user(user)
+            app.logger.info('Activation request: username %s', user.uid)
             return redirect(url_for('activation_mail'))
-        else: 
-            flash(gettext('Sorry, no user by that code...'), 'error') 
+        else:
+            flash(gettext('Codice non valido.'), 'error')
+            app.logger.info(
+                'Activation request failed: schacPersonalUniqueID %s',
+                user.uid
+            )
     return render_template('activation.html', form=form)
+
 
 @app.route('/activation_mail', methods=['GET', 'POST'])
 @login_required
@@ -93,38 +115,87 @@ def activation_mail():
         email = form.email.data
         user.mail = email
         user_mail = UserMail(email, user.id)
-        db.session.add(user_mail)
-        db.session.commit()
+        try:
+            db.session.add(user_mail)
+            db.session.commit()
+        except Exception as e:
+            app.logger.error('SQL Exception: %s', e)
+        app.logger.info(
+            'Activation mail acquired: username %s, mail %s',
+            user.uid,
+            email
+        )
         if send_mail_op(user, 'IDP account activation', 'activate'):
-            flash(gettext('Activation mail sent!'), 'message') 
+            flash(gettext('Messaggio di attivazione inviato.'), 'message')
+        app.logger.info(
+            'Activation mail sent: username %s, mail %s',
+            user.uid,
+            email
+        )
     return render_template('activation_mail.html', form=form, user=user)
 
-@app.route('/activate', methods=['GET', 'POST'])
+
+
+@app.route('/activate_op', methods=['GET', 'POST'])
 @login_required
 def activate():
     user = current_user
+    app.logger.info('activate_op requested: username %s', user.uid)
     if set_new_mail(user):
-        return render_template('activate.html', user=user)
+        app.logger.info(
+            'User activated: username %s',
+            user.uid
+        )
+        return redirect(url_for('change_pw'))
     else:
+        app.logger.error(
+            'User cannot be activated: username %s',
+            user.uid
+        )
         abort(500)
+
 
 @app.route('/logout')
 @login_required
 def logout():
+    user = current_user
+    app.logger.info('Logout: username %s', user.uid)
     logout_user()
     return redirect(url_for('index'))
+
 
 @app.route('/token_op')
 def token_op():
     token_value = request.args.get('token')
     op = request.args.get('op')
+    app.logger.info(
+        'Token Operation: token %s, op %s',
+        token_value,
+        op
+    )
+
     token = Token.query.filter_by(value=token_value).first()
+    user = None
     if token:
-        user = ldapservices.get_user_by_dn(token.user_id)
+        try:
+            user = ldapservices.get_user_by_dn(token.user_id)
+        except Exception as e:
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
         login_user(user)
+        app.logger.info(
+            "Token Login: token %s, username %s",
+            token_value,
+            user.uid
+        )
         return redirect(url_for(op))
     else:
+        app.logger.info(
+            "Token Login failed: token %s",
+            token_value
+        )
         abort(401)
+
 
 def send_mail_op(user, subject, op):
     token = Token(user.id)
@@ -132,7 +203,7 @@ def send_mail_op(user, subject, op):
     db.session.commit()
     op_url = app.config['IDP_BASE_URL'] + url_for('token_op', token=token.value, op=op)
     body = render_template(
-        op+'.j2',
+        op + '.j2',
         op_url=op_url,
         mail_signature=app.config['MAIL_SIGNATURE']
     )
@@ -143,25 +214,20 @@ def send_mail_op(user, subject, op):
             body=body
         )
     except Exception as e:
-        # TODO: log exception
-        print e
-        #abort(500)
+        app.logger.error('MAIL Exception: %s', e)
+        abort(500)
     return True
+
 
 def set_new_mail(user):
     user_mail = UserMail.query.filter_by(user_id=user.id).first()
     if user_mail:
         r = None
-        r = ldapservices.change_usermail(user, user_mail.email)
-        '''
         try:
             r = ldapservices.change_usermail(user, user_mail.email)
         except Exception as e:
-            # TODO: log exception
-            print e
-            #abort(500)
-        '''
-        if r: 
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
+        if r:
             return True
     return None
-
