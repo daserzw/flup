@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, InputRequired, EqualTo, Email
 class NewPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[
         InputRequired(),
-        EqualTo('confirm_password', message='Passwords must match')
+        EqualTo('confirm_password', message='Le password devono corrispondere.')
     ])
     confirm_password = PasswordField(
         'Repeat Password', 

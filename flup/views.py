@@ -27,26 +27,45 @@ def index():
             app.logger.info('Login failed: username %s', username)
     return render_template('login.html', form=form)
 
+@app.route('/user_menu')
+@login_required
+def user_menu():
+    user = current_user
+    return render_template('user_menu.html', user=user)
+
+
+def password_is_safe(user, password):
+    if (len(password) > 7 and
+        user.givenName.lower() not in password.lower() and
+        user.sn.lower() not in password.lower()):
+        return True
+    return False
 
 @app.route('/change_pw', methods=['GET', 'POST'])
 @login_required
 def change_pw():
     app.logger.debug('change_pw requested')
-    next_url = request.args.get('next_url')
+    error = ''
     form = NewPasswordForm()
+    user = current_user
+    password = form.password.data
     if form.validate_on_submit():
-        user = User(current_user)
-        password = form.password.data
-        try:
-            r = ldapservices.change_userpw(user, password)
-        except Exception as e:
-            app.logger.error('LDAP Exception: %s', e)
-            abort(500)
-        flash(gettext('Password modificata con successo.'), 'message')
-        app.logger.info('Password changed: username %s', user.uid)
-        if next_url:
-            return render_template(url_for(next_url))
-    return render_template('change_pw.html', form=form)
+        if password_is_safe(user, password):
+            try:
+                r = ldapservices.change_userpw(user, password)
+            except Exception as e:
+                app.logger.error('LDAP Exception: %s', e)
+                abort(500)
+            flash(gettext('Password modificata con successo.'), 'message')
+            app.logger.info('Password changed: username %s', user.uid)
+            return redirect(url_for('user_menu'))
+        else:
+            error = (
+                'Le password non posso contenere il proprio nome o '
+                'cognome e devono essere lunghe almeno 8 caratteri.'
+            )
+            form.password.errors.append(error)
+    return render_template('change_pw.html', form=form, error=error)
 
 
 @app.route('/reset_pw', methods=['GET', 'POST'])
@@ -93,7 +112,7 @@ def activation():
         except Exception as e:
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
-        if user:
+        if user and user.mail:
             login_user(user)
             app.logger.info('Activation request: username %s', user.uid)
             return redirect(url_for('activation_mail'))
