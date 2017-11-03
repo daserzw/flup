@@ -3,86 +3,30 @@
 {% endblock%}
 {% block head %}
 {{ super() }}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<script language="javascript">
-    
-function setParam(name, value) {
-      var l = window.location;
-      /* build params */
-      var params = {};
-      var x = /(?:\??)([^=&?]+)=?([^&?]*)/g;
-      var s = l.search;
-      for(var r = x.exec(s); r; r = x.exec(s)) {
-          r[1] = decodeURIComponent(r[1]);
-          if (!r[2]) r[2] = '%%';
-          params[r[1]] = r[2];
-      }
-      /* set param */
-      params[name] = encodeURIComponent(value);
-      /* build search */
-      var search = [];
-      for(var i in params) {
-          var p = encodeURIComponent(i);
-          var v = params[i];
-          if (v != '%%') p += '=' + v;
-          search.push(p);
-      }
-      search = search.join('&');
-      /* execute search */
-      l.search = search;
-  }
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-    var results = regex.exec(location.search);
-    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-function check_epb() {
-    var cookiestring = RegExp("epb[^;]+").exec(document.cookie);
-    var value = unescape(!!cookiestring ? cookiestring.toString().replace(/^[^=]+./,"") : "");
-    if (value == "ok") {
-        document.getElementById('epb-notice').style.display = 'none';
-    }
-}
-function hide_epb() {
-    document.cookie = "epb=ok; expires=Fri, 31 Dec 9999 23:59:59 GMT";
-    document.getElementById('epb-notice').style.display = 'none';
-}
-function show_policy() {
-    el = document.getElementById("overlay");
-    el.style.display = (el.style.display == "none") ? "block" : "none";
-}
-</script>
 {% endblock %}
 {% block content %}
-<div id="overlay" style="display: none">
-  <div>
-    <h1>{{ _("Policy dei cookie per questo sito") }}</h1>
-    <h2>{{ _("Cosa sono i cookie") }}</h2>
-    <p>{{ _("Questo sito usa i cookie, che sono piccoli file che vengono memorizzati sul tuo computer tramite il browser.") }}</p>
-    <p>{{ _("Per informazioni generali sui cookie, &egrave; vedi") }}
-        <a href="https://it.wikipedia.org/wiki/Cookie"> {{ _("l'articolo di Wikipedia sui cookie HTTP.") }}</a>
-    </p>
-    <h2>{{ _("Come utilizziamo i cookie") }}</h2>
-    <p>{{ _("Usiamo i cookie esclusivamente per gestire l'accesso al sito.") }}</p>
-    <h2>{{ _("Disabilitare i cookie") }}</h2>
-    <p>{{ _("Puoi eliminare la memorizzazione di cookie modificando opportunamente le configurazioni del tuo browser web,
-    ma alcune funzionalità del sito non saranno più disponibili.") }}</p>
-    <h2>{{ _("Terze parti") }}</h2>
-    <p>{{ _("Non trasmettiamo i nostri cookie a nessuna terza parte.") }}</p>
-    <p>Email: <a href="mailto:idpcloud-service@garr.it">idpcloud-service@garr.it</a></p>
-    <p><br/></p>
-    <p><center><a href='#' onclick='show_policy(); return false'>{{ _('Clicca qui per chiudere') }}</a></center></p>
-  </div>
-</div>
-<div class="wrapper">
-  <div id="epb-notice">
-      {{ _("Utilizzando i servizi di questo sito, accetti anche l'utilizzo dei cookie. ") }}
-      <a href="#" onclick="show_policy(); return false">{{ _("Maggiori informazioni qui.") }}</a>
-      <a href="#" onclick="hide_epb(); return false">{{ _("Chiudi") }}.</a>
-  </div>
   <div class="container">
+    <div class="page-header">
+      <div class="row">
+        <div class="col-md-2">
+            <img src="static/idem-logo.png" width="200" height="80" alt="IDEM GARR AAI" />
+        </div>
+        <div class="col-md-8">
+            <h1>Gestione Account Identity Provider - {{  orgname }}</h1>
+        </div>
+        <div class="col-md-2">
+            {% if current_user.is_authenticated %}
+            <p class="text-right">{{ current_user.uid }}
+                <a class="btn btn-default" href="{{url_for('logout')}}">
+                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span>{{  _("Logout") }}
+                </a>
+            </p>
+                {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}
@@ -91,33 +35,23 @@ function show_policy() {
     {% else %}
     {% set css_class = 'alert alert-info alert-dismissible' %}
     {% endif %}
-    <div class="{{ css_class }}">
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-      <strong>{{ message|safe }}</strong>
-    </div>
+      <div class="{{ css_class }}">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>{{ message|safe }}</strong>
+      </div>
     {% endfor %}
     {% endif %}
     {% endwith %}
-  </div>
-  {% if current_user.is_authenticated %}
-  <div class="container">
-    <p class="text-right">{{ current_user.givenName }}<a class="btn btn-default" href="{{url_for('logout')}}"><span class="glyphicon glyphicon-off" aria-hidden="true"></span>_('Logout')</a></p>
-  </div>
-  {% endif %}
-  <div class="container">
-    <header>
-      <a href="{{ idp_info_url}}"><img src="{{ idp_logo }}" alt="{{ idp_org_name }}" height="170px" /></a>
-    </header>
-
+    </div>
   {% block main %}
   {% endblock %}
   </div>
   {% block footer %}
-  <footer>
+  <div>
     <div class="container container-footer">
       <p class="footer-text">Footer text</p>
     </div>
-  </footer>
+  </div>
 </div>
 {% endblock %}
 {% endblock %}

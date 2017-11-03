@@ -8,7 +8,7 @@
       {{ form.csrf_token }}
       <div class="form-group">
 	{{ form.username.label }}
-	{{ form.username(class_="form-control form-control-danger") }}
+	{{ form.username(class_="form-control form-control-danger", form_type="horizontal", horizontal_columns=('lg', 1, 1))) }}
 	{% if form.username.errors %}
 	{% for error in form.username.errors %}
 	<span class="text-danger">{{ error }}</span>

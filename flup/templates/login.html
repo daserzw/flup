@@ -3,58 +3,27 @@
 FLUP
 {% endblock %}
 {% block main %}
-<div class="content">
-  <div class="column one">
     <form action="/" method="post">
       {{ form.csrf_token }}
-      <div class="form-element-wrapper">
-	{{ form.username.label }}
-	{{ form.username(class_="form-control form-control-danger") }}
-	{% if form.username.errors %}
-	  {% for error in form.username.errors %}
-	    <span class="text-danger">{{ error }}</span>
-	  {% endfor %}
-	{% endif %}
-      </div>
-      <div class="form-element-wrapper">
-	{{ form.password.label }}
-	{{ form.password(class_="form-control form-control-danger") }}
+    <div class="row">
+        <div class="form-group col-xs-6 col-lg-3">
+        {{ form.username.label }}
+    	{{ form.username(class="form-control form-control-danger") }}
+    	{% if form.username.errors %}
+	      {% for error in form.username.errors %}
+	         <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+	    {% endif %}
+    {{ form.password.label }}
+	{{ form.password(class="form-control form-control-danger") }}
 	{% if form.password.errors %}
 	  {% for error in form.password.errors %}
 	    <span class="text-danger">{{ error }}</span>
 	  {% endfor %}
 	{% endif %}
-      </div>
-      <div class="form-element-wrapper">
-	<button type="submit" class="form-element form-button">Login</button>
-      </div>
+        </div>
+    </div>
+        <button type="submit" class="form-element form-button">Login</button>
     </form>
-  </div>
-  <div class="column two col-sm-4">
-    <ul class="list list-help">
-      <li class="list-help-item"><a href="{{ url_for('reset_pw') }}"><span class="item-marker">&rsaquo;</span>{{ _("Password dimenticata?") }}</a></li>
-      <li class="list-help-item"><a href="mailto:{{ admin_email }}"><span class="item-marker">&rsaquo;</span>{{ _("Serve aiuto?") }}</a></li>
-      <li class="list-help-item"><a href="{{ idp_info_page }}"><span class="item-marker">&rsaquo;</span>{{ _("Pagina di informazioni") }}</a></li>
-      <li class="list-help-item"><a href="{{ idp_privacy_page }}"><span class="item-marker">&rsaquo;</span>{{ _("Privacy Policy") }}</a></li>
-    </ul>
-    <p>
-      <a href="javascript:setParam('language', 'it');">
-	<img height="16px" src="/idp/images/itFlag.png">
-      </a>
-      <a href="javascript:setParam('language', 'en');">
-	<img height="16px" src="/idp/images/enFlag.png">
-      </a>
-    </p>
-    <p>
-      <a href="http://www.geant.org/Services/Trust_identity_and_security/eduGAIN">
-	<img src="/images/edugain-logo.png" alt="eduGAIN Interfederation" style="width: 100px"/>
-      </a>
-    </p>
-    <p>
-      <a href="http://www.idem.garr.it">
-	<img src="/idp/images/IDEM_logo.png" alt="IDEM" style="width: 100px"/>
-      </a>
-    </p>
-  </div>
-</div>
+    <a href="{{ url_for('reset_pw') }}"><span class="item-marker">&rsaquo;</span>{{ _("Password dimenticata?") }}</a>
 {% endblock %}
