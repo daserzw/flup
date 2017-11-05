@@ -1,29 +1,26 @@
-{% extends "/layout.html" %} {% block main %}
-<div class="content">
-  <div class="column one">
-      <h2>Imposta una nuova password</h2>
+{% extends "/layout.html" %}
+{% block main %}
+    <h2>Imposta una nuova password</h2>
     <form method="POST" action="/change_pw">
       {{ form.csrf_token }}
-      <div class="form-element-wrapper">
-	{{ form.password.label }}
-	{{ form.password(class_="form-control form-control-danger") }}
-	{% if form.password.errors %}
-	{% for error in form.password.errors %}
-	<span class="text-danger">{{ error }}</span>
-	{% endfor %}
-	{% endif %}
-      </div>
-      <div class="form-element-wrapper">
-	{{ form.confirm_password.label }}
-	{{ form.confirm_password(class_="form-control form-control-danger") }}
-	{% if form.confirm_password.errors %}
-	{% for error in form.confirm_password.errors %}
-	<span class="text-danger">{{ error }}</span>
-	{% endfor %}
-	{% endif %}
-      </div>
-      <button type="submit" class="form-element form-button">Cambia password</button>
+    <div class="row">
+        <div class="form-group col-xs-6 col-lg-3">
+    	{{ form.password.label }}
+	    {{ form.password(class_="form-control form-control-danger") }}
+	    {% if form.password.errors %}
+	    {% for error in form.password.errors %}
+	        <span class="text-danger">{{ error }}</span>
+	    {% endfor %}
+	    {% endif %}
+    	{{ form.confirm_password.label }}
+	    {{ form.confirm_password(class_="form-control form-control-danger") }}
+	    {% if form.confirm_password.errors %}
+	    {% for error in form.confirm_password.errors %}
+	        <span class="text-danger">{{ error }}</span>
+	    {% endfor %}
+	    {% endif %}
+        </div>
+    </div>
+      <button type="submit" class="btn btn-primary">Cambia password</button>
     </form>
-  </div>
-</div>
 {% endblock %}

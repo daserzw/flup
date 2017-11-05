@@ -153,6 +153,34 @@ def activation_mail():
         )
     return render_template('activation_mail.html', form=form, user=user)
 
+@app.route('/new_mail', methods=['GET', 'POST'])
+@login_required
+def new_mail():
+    user = current_user
+    form = EmailForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        user.mail = email
+        user_mail = UserMail(email, user.id)
+        try:
+            db.session.add(user_mail)
+            db.session.commit()
+        except Exception as e:
+            app.logger.error('SQL Exception: %s', e)
+        app.logger.info(
+            'New mail acquired: username %s, mail %s',
+            user.uid,
+            email
+        )
+        if send_mail_op(user, 'IDP account new mail', 'new_mail'):
+            flash(gettext('Messaggio di verifica inviato.'), 'message')
+        app.logger.info(
+            'Set new_mail mail sent: username %s, mail %s',
+            user.uid,
+            email
+        )
+        return redirect(url_for('/user_menu'))
+    return render_template('new_mail.html', form=form, user=user)
 
 
 @app.route('/activate_op', methods=['GET', 'POST'])

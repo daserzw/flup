@@ -1,9 +1,8 @@
 {% extends "/layout.html" %} {% block main %}
-<div class="content">
-  <div class="column one">
     <form method="POST" action="/activation">
       {{ form.csrf_token }}
-      <div class="form-element-wrapper">
+    <div class="row">
+        <div class="form-group col-xs-6 col-lg-3">
 	{{ form.spuid.label }}
 	{{ form.spuid(class_="form-control form-control-danger") }}
 	{% if form.spuid.errors %}
@@ -12,8 +11,7 @@
 	{% endfor %}
 	{% endif %}
       </div>
+    </div>
       <button type="submit" class="form-element form-button">Attiva l'account</button>
     </form>
-  </div>
-</div>
 {% endblock %}

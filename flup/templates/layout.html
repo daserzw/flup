@@ -3,30 +3,32 @@
 {% endblock%}
 {% block head %}
 {{ super() }}
+    <link href="/static/styles.css" rel="stylesheet">
 {% endblock %}
 {% block content %}
   <div class="container">
     <div class="page-header">
       <div class="row">
-        <div class="col-md-2">
-            <img src="static/idem-logo.png" width="200" height="80" alt="IDEM GARR AAI" />
+        <div class="col-md-10" style="align-items: center;">
+            <h2>IdP in the Cloud - Istituto di Ricerca DEMO</h2>
+            <h3>Gestione Account</h3>
         </div>
-        <div class="col-md-8">
-            <h1>Gestione Account Identity Provider - {{  orgname }}</h1>
-        </div>
-        <div class="col-md-2">
-            {% if current_user.is_authenticated %}
-            <p class="text-right">{{ current_user.uid }}
-                <a class="btn btn-default" href="{{url_for('logout')}}">
-                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span>{{  _("Logout") }}
-                </a>
-            </p>
-                {% endif %}
+        <div class="col-md-2" style="align-items: center;">
+            <br /><img src="static/garr-logo.png" width="100" alt="Consortium GARR" /> <br />
+            <img src="static/idem-logo.png" width="100" alt="Federazione IDEM GARR AAI" />
         </div>
       </div>
     </div>
+    <div class="row text-right">
+         {% if current_user.is_authenticated %}
+            <p class="text-right">{{ current_user.uid }} |
+                <a href="{{url_for('logout')}}">
+                 {{  _("Logout") }}
+                </a>
+            </p>
+         {% endif %}
+    </div>
     <div class="row">
-
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}
@@ -46,13 +48,9 @@
   {% block main %}
   {% endblock %}
   </div>
-  {% block footer %}
-  <div>
-    <div class="container container-footer">
+    <footer class="footer">
+      <div class="container">
       <p class="footer-text">IDEM GARR AAI - IdP in the Cloud</p>
-    </div>
-  </div>
-</div>
+      </div>
+    </footer>
 {% endblock %}
-{% endblock %}
-

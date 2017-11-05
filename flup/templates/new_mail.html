@@ -1,8 +1,9 @@
 {% extends "/layout.html" %} {% block main %}
     <h2>{{ _("Salve") }} {{ user.givenName }} {{ user.sn }}</h2>
-    <p>{{ _("Per attivare il tuo account devi registrare un
-    indirizzo email personale su cui invieremo un link di attivazione.") }}</p>
-    <form method="POST" action="/activation_mail">
+    <p>{{ _("Imposta il tuo nuovo indirizzo email personale, su cui invieremo
+             una messaggio di verifica. Segui il collegamento nel messaggio
+             per completare la procedura.") }}</p>
+    <form method="POST" action="/new_mail">
         {{ form.csrf_token }}
     <div class="row">
         <div class="form-group col-xs-6 col-lg-3">
@@ -13,7 +14,7 @@
                     <span class="text-danger">{{ error }}</span>
                 {% endfor %}
             {% endif %}
-        </div>
+          </div>
     </div>
         <button type="submit" class="btn btn-primary">Invia il link di attivazione</button>
     </form>

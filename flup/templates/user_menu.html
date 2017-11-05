@@ -1,6 +1,5 @@
-{% extends "/layout.html" %} {% block main %}
-<div class="content">
-  <div class="column one">
+{% extends "/layout.html" %}
+{% block main %}
     <h2>Dati Utente</h2>
       <ul>
         <li>Nome: {{ user.givenName }}</li>
@@ -11,7 +10,6 @@
     <h2>Operazioni</h2>
       <ul>
         <li><a href="/change_pw">Cambio password</a></li>
+        <li><a href="/new_mail">Modifica email</a></li>
       </ul>
-  </div>
-</div>
 {% endblock %}
