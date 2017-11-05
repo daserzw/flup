@@ -1,0 +1,9 @@
+{% extends "/layout.html" %} {% block main %}
+    <h1>{{ _("Attenzione: accesso non autorizzato.") }}</h1>
+    <p>{{ _("Torna alla:" ) }}
+      <a href="{{ url_for('index') }}">
+	{{ _("home page") }}
+      </a>
+      .
+    </p>
+{% endblock %}

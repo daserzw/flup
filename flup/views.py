@@ -93,12 +93,12 @@ def reset_pw():
                     user.uid,
                     email
                 )
-            else:
-                flash(gettext('Email non valida.'), 'error')
-                app.logger.info(
-                    'Password reset failed: mail %s',
-                    email
-                )
+        else:
+            flash(gettext('Email non valida.'), 'error')
+            app.logger.info(
+                'Password reset failed: mail %s',
+                email
+            )
     return render_template('reset_pw.html', form=form)
 
 
@@ -256,6 +256,8 @@ def token_op():
             token_value,
             user.uid
         )
+        db.session.delete(token)
+        db.session.commit()
         return redirect(url_for(op))
     else:
         app.logger.info(
