@@ -2,7 +2,7 @@
     <h2>{{ _("Salve") }} {{ user.givenName }} {{ user.sn }}</h2>
     <p>{{ _("Per attivare il tuo account devi registrare un
     indirizzo email personale su cui invieremo un link di attivazione.") }}</p>
-    <form method="POST" action="/activation_mail">
+    <form method="POST" action="{{ url_for('activation_mail') }}">
         {{ form.csrf_token }}
     <div class="row">
         <div class="form-group col-xs-6 col-lg-3">

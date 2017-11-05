@@ -11,6 +11,10 @@ class User(UserMixin):
         self.sn = sn
         self.mail = mail
 
+    def __str__(self):
+        return ("id: %s, uid:%s, givenName: %s, sn: %s, mail: %s") % (self.id, self.uid, self.givenName, self.sn, self.mail)
+
+        
 class Token(db.Model):
 
     id = db.Column(db.Integer, primary_key = True)

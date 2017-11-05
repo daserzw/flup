@@ -3,7 +3,7 @@
     <p>{{ _("Imposta il tuo nuovo indirizzo email personale, su cui invieremo
              una messaggio di verifica. Segui il collegamento nel messaggio
              per completare la procedura.") }}</p>
-    <form method="POST" action="/new_mail">
+    <form method="POST" action="{{ url_for('new_mail') }}">
         {{ form.csrf_token }}
     <div class="row">
         <div class="form-group col-xs-6 col-lg-3">

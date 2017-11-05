@@ -9,9 +9,10 @@ from flask_babel import gettext
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('user_menu'))
     form = LoginForm()
     username = form.username.data
-    user = None
     if form.validate_on_submit():
         try:
             user = ldapservices.user_login(form.username.data, form.password.data)
@@ -21,7 +22,7 @@ def index():
         if user:
             login_user(user)
             app.logger.info('Login: username %s', username)
-            return render_template('user_menu.html', user=user)
+            return redirect(url_for('user_menu'))
         else:
             flash(gettext('Nome utente o password invalide.'), 'error')
             app.logger.info('Login failed: username %s', username)
@@ -85,7 +86,7 @@ def reset_pw():
                 user.uid,
                 email
             )
-            if send_mail_op(user, 'IDP Reset password', 'change_pw'):
+            if send_mail_op(user, 'IDP - reset password', 'change_pw'):
                 flash(gettext('Messaggio di reset inviato.'), 'message')
                 app.logger.info(
                     'Password reset sent: username %s, mail %s',
@@ -112,7 +113,7 @@ def activation():
         except Exception as e:
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
-        if user and user.mail:
+        if user and not user.mail:
             login_user(user)
             app.logger.info('Activation request: username %s', user.uid)
             return redirect(url_for('activation_mail'))
@@ -139,18 +140,19 @@ def activation_mail():
             db.session.commit()
         except Exception as e:
             app.logger.error('SQL Exception: %s', e)
+            abort(500)
         app.logger.info(
             'Activation mail acquired: username %s, mail %s',
             user.uid,
             email
         )
-        if send_mail_op(user, 'IDP account activation', 'activate'):
+        if send_mail_op(user, 'IDP - attivazione account', 'activate_op'):
             flash(gettext('Messaggio di attivazione inviato.'), 'message')
-        app.logger.info(
-            'Activation mail sent: username %s, mail %s',
-            user.uid,
-            email
-        )
+            app.logger.info(
+                'Activation mail sent: username %s, mail %s',
+                user.uid,
+                email
+            )
     return render_template('activation_mail.html', form=form, user=user)
 
 @app.route('/new_mail', methods=['GET', 'POST'])
@@ -167,25 +169,44 @@ def new_mail():
             db.session.commit()
         except Exception as e:
             app.logger.error('SQL Exception: %s', e)
+            abort(500)
         app.logger.info(
             'New mail acquired: username %s, mail %s',
             user.uid,
             email
         )
-        if send_mail_op(user, 'IDP account new mail', 'new_mail'):
+        if send_mail_op(user, 'IDP - nuovo indirizzo mail', 'new_mail_op'):
             flash(gettext('Messaggio di verifica inviato.'), 'message')
         app.logger.info(
             'Set new_mail mail sent: username %s, mail %s',
             user.uid,
             email
         )
-        return redirect(url_for('/user_menu'))
+        return redirect(url_for('user_menu'))
     return render_template('new_mail.html', form=form, user=user)
+
+@app.route('/new_mail_op', methods=['GET', 'POST'])
+@login_required
+def new_mail_op():
+    user = current_user
+    app.logger.info('new_mail_op requested: username %s', user.uid)
+    if set_new_mail(user):
+        app.logger.info(
+            'Set new mail for User: username %s',
+            user.uid
+        )
+        return redirect(url_for('user_menu', message='Indirizzo mail modificato con successo.'))
+    else:
+        app.logger.error(
+            'New mail for user cannot be set: username %s',
+            user.uid
+        )
+        abort(500)
 
 
 @app.route('/activate_op', methods=['GET', 'POST'])
 @login_required
-def activate():
+def activate_op():
     user = current_user
     app.logger.info('activate_op requested: username %s', user.uid)
     if set_new_mail(user):
@@ -265,9 +286,8 @@ def send_mail_op(user, subject, op):
         abort(500)
     return True
 
-
 def set_new_mail(user):
-    user_mail = UserMail.query.filter_by(user_id=user.id).first()
+    user_mail = UserMail.query.filter_by(user_id=user.id).order_by(UserMail.id.desc()).first()
     if user_mail:
         r = None
         try:
@@ -276,5 +296,7 @@ def set_new_mail(user):
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
         if r:
+            db.session.delete(user_mail)
+            db.session.commit()
             return True
     return None

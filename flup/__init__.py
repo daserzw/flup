@@ -14,7 +14,7 @@ log_formatter = logging.Formatter(
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 app.config.from_object('flup.config')
-app.config.from_envvar('FLUP_SETTINGS')
+#app.config.from_envvar('FLUP_SETTINGS')
 app.secret_key = app.config['SECRET_KEY']
 babel = Babel(app)
 db = SQLAlchemy(app)
@@ -61,6 +61,7 @@ def internal_server_error(e):
     return render_template('500.html'), 500
 
 from flup import views
+db.create_all()
 
 @app.cli.command()
 def create_db():

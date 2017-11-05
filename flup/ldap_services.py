@@ -68,12 +68,15 @@ class Ldapservice():
         if 'mail' in ldapentry:
             mail = ldapentry['mail'][0]
         app.logger.debug("ldapentry: %s", ldapentry)
-        return User(userdn,
-                    ldapentry['uid'][0],
-                    ' '.join(ldapentry['givenName']),
-                    ' '.join(ldapentry['sn']),
-                    mail
+        user = User(id=userdn,
+                    uid=ldapentry['uid'][0],
+                    givenName=' '.join(ldapentry['givenName']),
+                    sn=' '.join(ldapentry['sn']),
+                    mail=mail
         )
+        app.logger.debug("returned user: %s", user)
+        return user
+    
         
     def user_login(self, username, password):
         user = self.get_user_by_uid(username)

@@ -2,6 +2,9 @@ import os
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
+# APPLICATION ROOT
+APPLICATION_ROOT = '/flup'
+
 # DEBUG
 DEBUG = True
 TRAP_BAD_REQUEST_ERRORS = True
@@ -18,10 +21,10 @@ SECRET_KEY = 'fdadfetre82302394839u0dsfomdovkn23er124'
 
 
 # LDAP
-LDAPURI = 'ldap://idp.example.org'
+LDAPURI = 'ldap://localhost'
 BINDDN = 'cn=admin,dc=example,dc=org'
 BINDPW = 'password'
-BASEDN = 'dc=example,dc=org'
+BASEDN = 'dc=garr,dc=it'
 
 # BABEL
 
@@ -31,11 +34,11 @@ BABEL_DEFAULT_TIMEZONE = 'Europe/Rome'
 
 # HOSTNAME
 
-IDP_BASE_URL = 'https//127.0.0.1:5000'
+IDP_BASE_URL = 'https://idp.example.org'
 
 # MAIL
 
-MAIL_SERVER = 'localhost'
-MAIL_DEFAULT_SENDER = 'davide.vaghetti@unipi.it'
-MAIL_SIGNATURE = 'IDEM GARR AAI - IdP in the Cloud'
+MAIL_SERVER = 'smtp.example.org'
+MAIL_DEFAULT_SENDER = 'noreply@example.org'
+MAIL_SIGNATURE = 'MAIL_SIGNATURE'
 

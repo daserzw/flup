@@ -1,6 +1,6 @@
 {% extends "/layout.html" %}
 {% block main %}
-    <form method="POST" action="/reset_pw">
+    <form method="POST" action="{{ url_for('reset_pw') }}">
       {{ form.csrf_token }}
       <div class="row">
         <div class="form-group col-xs-6 col-lg-3">

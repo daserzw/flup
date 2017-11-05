@@ -3,7 +3,7 @@
 FLUP
 {% endblock %}
 {% block main %}
-    <form action="/" method="post">
+    <form action="{{ url_for('index') }}" method="post">
       {{ form.csrf_token }}
     <div class="row">
         <div class="form-group col-xs-6 col-lg-3">
@@ -25,5 +25,5 @@ FLUP
     </div>
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    <a href="{{ url_for('reset_pw') }}"><span class="item-marker">&rsaquo;</span>{{ _("Password dimenticata?") }}</a>
+    <a href="{{ url_for('reset_pw') }}">{{ _("Password dimenticata?") }}</a>
 {% endblock %}
