@@ -1,7 +1,4 @@
 {% extends "/layout.html" %}
-{% block title %}
-FLUP
-{% endblock %}
 {% block main %}
 <p>Accedi al tuo account o <a href="{{ url_for('activation') }}">attivalo</a> se non lo hai ancora fatto.</p>
     <form action="{{ url_for('index') }}" method="post">

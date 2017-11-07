@@ -22,7 +22,7 @@ class LoginForm(FlaskForm):
 
 class EmailForm(FlaskForm):
     email = StringField('Email',
-                          validators=[InputRequired()])
+                          validators=[Email()])
 
 class ActivationsPUIDForm(FlaskForm):
     spuid = StringField('CODICE FISCALE',

@@ -113,16 +113,16 @@ def activation():
         except Exception as e:
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
-        if user and not user.mail:
-            login_user(user)
-            app.logger.info('Activation request: username %s', user.uid)
-            return redirect(url_for('activation_mail'))
-        else:
-            flash(gettext('Codice non valido.'), 'error')
-            app.logger.info(
-                'Activation request failed: schacPersonalUniqueID %s',
-                user.uid
-            )
+        if user:
+            if not user.mail:
+                login_user(user)
+                app.logger.info('Activation request: username %s', user.uid)
+                return redirect(url_for('activation_mail'))
+        flash(gettext('Codice Fiscale non valido.'), 'error')
+        app.logger.info(
+            'Activation request failed: schacPersonalUniqueID %s',
+            spuid
+        )
     return render_template('activation.html', form=form)
 
 
