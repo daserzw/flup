@@ -118,7 +118,7 @@ def activation():
                 login_user(user)
                 app.logger.info('Activation request: username %s', user.uid)
                 return redirect(url_for('activation_mail'))
-        flash(gettext('Codice Fiscale non valido.'), 'error')
+        flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale deve essere scritto con lettere maiuscole.'), 'error')
         app.logger.info(
             'Activation request failed: schacPersonalUniqueID %s',
             spuid
