@@ -7,7 +7,6 @@ click==6.7
 configobj==5.0.6
 dominate==2.3.1
 ecdsa==0.11
-euca2ools==3.1.0
 Flask==0.12.2
 Flask-Babel==0.11.2
 Flask-Bootstrap==3.3.7.1
