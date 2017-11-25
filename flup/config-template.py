@@ -42,3 +42,5 @@ MAIL_SERVER = 'smtp.example.org'
 MAIL_DEFAULT_SENDER = 'noreply@example.org'
 MAIL_SIGNATURE = 'MAIL_SIGNATURE'
 
+# ORGNAME
+ORGNAME = 'Organization Name'

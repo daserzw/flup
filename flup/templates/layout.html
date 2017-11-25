@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 {% block title %}
-IdP in the Cloud - Gestione Account
+{{ config['ORGNAME'] }} Identity Provider - Gestione Account
 {% endblock%}
 {% block head %}
 {{ super() }}
@@ -11,7 +11,7 @@ IdP in the Cloud - Gestione Account
     <div class="page-header">
       <div class="row">
         <div class="col-md-10" style="align-items: center;">
-            <h2>IdP in the Cloud - Istituto di Ricerca DEMO</h2>
+            <h2>{{ config['ORGNAME'] }} - Identity Provider</h2>
             <h3>Gestione Account</h3>
         </div>
         <div class="col-md-2" style="align-items: center;">
@@ -51,7 +51,7 @@ IdP in the Cloud - Gestione Account
   </div>
     <footer class="footer">
       <div class="container">
-      <p class="footer-text">IDEM GARR AAI - IdP in the Cloud</p>
+      <p class="footer-text">{{ config['ORGNAME'] }} - Identity Provider - IDEM GARR AAI</p>
       </div>
     </footer>
 {% endblock %}
