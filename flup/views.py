@@ -42,14 +42,13 @@ def password_is_safe(user, password):
         return True
     return False
 
+
 @app.route('/change_pw', methods=['GET', 'POST'])
 @login_required
 def change_pw():
     app.logger.debug('change_pw requested')
     error = ''
     message = None
-    op = None
-    op = request.args.get('op')
     form = NewPasswordForm()
     user = current_user
     password = form.password.data
@@ -62,8 +61,6 @@ def change_pw():
                 abort(500)
             flash(gettext('Password modificata con successo.'), 'message')
             app.logger.warning('Password changed: username %s', user.uid)
-            if op == 'activated':
-                send_mail_activated(user)
             return redirect(url_for('user_menu'))
         else:
             error = (
@@ -214,18 +211,20 @@ def new_mail_op():
 def activate_op():
     user = current_user
     app.logger.warning('activate_op requested: username %s', user.uid)
-    if set_new_mail(user):
+    email = set_new_mail(user)
+    if email:
+        user.mail = email
         app.logger.warning(
             'User activated: username %s',
             user.uid
         )
-        return redirect(url_for('change_pw', op='activated'))
-    else:
-        app.logger.error(
-            'User cannot be activated: username %s',
-            user.uid
-        )
-        abort(500)
+        if send_mail_activated(user):
+            return redirect(url_for('change_pw'))
+    app.logger.error(
+        'User cannot be activated: username %s',
+        user.uid
+    )
+    abort(500)
 
 
 @app.route('/logout')
@@ -310,13 +309,12 @@ def send_mail_activated(user):
         app.logger.warning(
             'Account activated mail sent: username %s, mail %s',
             user.uid,
-            email
+            user.mail
         )
     except Exception as e:
         app.logger.error('MAIL Exception: %s', e)
         abort(500)
     return True
-
 
 def set_new_mail(user):
     user_mail = UserMail.query.filter_by(user_id=user.id).order_by(UserMail.id.desc()).first()
@@ -330,5 +328,5 @@ def set_new_mail(user):
         if r:
             db.session.delete(user_mail)
             db.session.commit()
-            return True
+            return user_mail.email
     return None
