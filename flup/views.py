@@ -295,7 +295,7 @@ def send_mail_op(user, subject, op):
 
 
 def send_mail_activated(user):
-    user.flupurl = 
+    user.flupurl = app.config['IDP_BASE_URL']+'/flup'
     body = render_template(
         'activated.j2',
         user=user,
