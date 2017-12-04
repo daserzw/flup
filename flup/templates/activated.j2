@@ -1,0 +1,30 @@
+Gentile {{ user.cn}},
+
+il tuo account è stato attivato con successo.
+
+Il nome utente che ti è stato assegnato è {{ user.uid }}, i dati completi
+associati al tuo account sono i seguenti:
+
+Nome: {{ user.givenName }}
+Cognome: {{ user.sn }}
+Email: {{ user.mail }}
+Nome utente: {{ user.uid }}
+
+Per gestire l'account vai su:
+
+{{ user.flupurl }}
+
+Da qui potrai modificare la password e l'email associata al tuo account. Inoltre,
+se smarrirai la password, potrai chiederne il reset seguendo il link "Passoword 
+dimenticata?".
+
+Infine, ti raccomandiamo di gestire la password seguendo le linee guida pubblicate su:
+
+https://wiki.idem.garrservices.it/wiki/index.php/MINSAL:Password
+
+Cordiali saluti
+
+--
+{{ mail_signature }}
+
+
