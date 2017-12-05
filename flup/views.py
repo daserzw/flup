@@ -1,6 +1,6 @@
 # coding=utf-8
 from flup import app, ldapservices, mail_services, db
-from flask import render_template, url_for, redirect, flash, abort, request, g
+from flask import render_template, url_for, redirect, flash, abort, request, g, session
 from model import Token, UserMail, User
 from forms import LoginForm, NewPasswordForm, EmailForm, ActivationsPUIDForm
 from flask_login import login_required, login_user, current_user, logout_user
@@ -21,11 +21,11 @@ def index():
             abort(500)
         if user:
             login_user(user)
-            app.logger.warning('Login: username %s', username)
+            app.logger.info('Login: username %s', username)
             return redirect(url_for('user_menu'))
         else:
             flash(gettext('Nome utente o password invalide.'), 'error')
-            app.logger.warning('Login failed: username %s', username)
+            app.logger.info('Login failed: username %s', username)
     return render_template('login.html', form=form)
 
 @app.route('/user_menu')
@@ -60,7 +60,7 @@ def change_pw():
                 app.logger.error('LDAP Exception: %s', e)
                 abort(500)
             flash(gettext('Password modificata con successo.'), 'message')
-            app.logger.warning('Password changed: username %s', user.uid)
+            app.logger.info('Password changed: username %s', user.uid)
             if 'activate' in session:
                 send_mail_activated(user)
                 session.pop('activate', None)
@@ -86,21 +86,21 @@ def reset_pw():
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
         if user:
-            app.logger.warning(
+            app.logger.info(
                 'Password reset requested: username %s, mail %s',
                 user.uid,
                 email
             )
             if send_mail_op(user, 'IDP - reset password', 'change_pw'):
                 flash(gettext('Messaggio di reset inviato.'), 'message')
-                app.logger.warning(
+                app.logger.info(
                     'Password reset sent: username %s, mail %s',
                     user.uid,
                     email
                 )
         else:
             flash(gettext('Email non valida.'), 'error')
-            app.logger.warning(
+            app.logger.info(
                 'Password reset failed: mail %s',
                 email
             )
@@ -121,10 +121,10 @@ def activation():
         if user:
             if not user.mail:
                 login_user(user)
-                app.logger.warning('Activation request: username %s', user.uid)
+                app.logger.info('Activation request: username %s', user.uid)
                 return redirect(url_for('activation_mail'))
         flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale deve essere scritto con lettere maiuscole.'), 'error')
-        app.logger.warning(
+        app.logger.info(
             'Activation request failed: schacPersonalUniqueID %s',
             spuid
         )
@@ -146,14 +146,14 @@ def activation_mail():
         except Exception as e:
             app.logger.error('SQL Exception: %s', e)
             abort(500)
-        app.logger.warning(
+        app.logger.info(
             'Activation mail acquired: username %s, mail %s',
             user.uid,
             email
         )
         if send_mail_op(user, 'IDP - attivazione account', 'activate_op'):
             flash(gettext('Messaggio di attivazione inviato.'), 'message')
-            app.logger.warning(
+            app.logger.info(
                 'Activation mail sent: username %s, mail %s',
                 user.uid,
                 email
@@ -175,14 +175,14 @@ def new_mail():
         except Exception as e:
             app.logger.error('SQL Exception: %s', e)
             abort(500)
-        app.logger.warning(
+        app.logger.info(
             'New mail acquired: username %s, mail %s',
             user.uid,
             email
         )
         if send_mail_op(user, 'IDP - nuovo indirizzo mail', 'new_mail_op'):
             flash(gettext('Messaggio di verifica inviato.'), 'message')
-        app.logger.warning(
+        app.logger.info(
             'Set new_mail mail sent: username %s, mail %s',
             user.uid,
             email
@@ -194,9 +194,9 @@ def new_mail():
 @login_required
 def new_mail_op():
     user = current_user
-    app.logger.warning('new_mail_op requested: username %s', user.uid)
+    app.logger.info('new_mail_op requested: username %s', user.uid)
     if set_new_mail(user):
-        app.logger.warning(
+        app.logger.info(
             'Set new mail for User: username %s',
             user.uid
         )
@@ -213,9 +213,9 @@ def new_mail_op():
 @login_required
 def activate_op():
     user = current_user
-    app.logger.warning('activate_op requested: username %s', user.uid)
+    app.logger.info('activate_op requested: username %s', user.uid)
     if set_new_mail(user):
-        app.logger.warning(
+        app.logger.info(
             'User activated: username %s',
             user.uid
         )
@@ -232,7 +232,7 @@ def activate_op():
 @login_required
 def logout():
     user = current_user
-    app.logger.warning('Logout: username %s', user.uid)
+    app.logger.info('Logout: username %s', user.uid)
     logout_user()
     return redirect(url_for('index'))
 
@@ -241,7 +241,7 @@ def logout():
 def token_op():
     token_value = request.args.get('token')
     op = request.args.get('op')
-    app.logger.warning(
+    app.logger.info(
         'Token Operation: token %s, op %s',
         token_value,
         op
@@ -256,7 +256,7 @@ def token_op():
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
         login_user(user)
-        app.logger.warning(
+        app.logger.info(
             "Token Login: token %s, username %s",
             token_value,
             user.uid
@@ -265,7 +265,7 @@ def token_op():
         db.session.commit()
         return redirect(url_for(op))
     else:
-        app.logger.warning(
+        app.logger.info(
             "Token Login failed: token %s",
             token_value
         )
@@ -307,7 +307,7 @@ def send_mail_activated(user):
             subject='IDP - account attivato',
             body=body
         )
-        app.logger.warning(
+        app.logger.info(
             'Account activated mail sent: username %s, mail %s',
             user.uid,
             user.mail
