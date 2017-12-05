@@ -61,6 +61,9 @@ def change_pw():
                 abort(500)
             flash(gettext('Password modificata con successo.'), 'message')
             app.logger.warning('Password changed: username %s', user.uid)
+            if 'activate' in session:
+                send_mail_activated(user)
+                session.pop('activate', None)
             return redirect(url_for('user_menu'))
         else:
             error = (
@@ -211,15 +214,13 @@ def new_mail_op():
 def activate_op():
     user = current_user
     app.logger.warning('activate_op requested: username %s', user.uid)
-    email = set_new_mail(user)
-    if email:
-        user.mail = email
+    if set_new_mail(user):
         app.logger.warning(
             'User activated: username %s',
             user.uid
         )
-        if send_mail_activated(user):
-            return redirect(url_for('change_pw'))
+        session['activate'] = 1
+        return redirect(url_for('change_pw'))
     app.logger.error(
         'User cannot be activated: username %s',
         user.uid
