@@ -24,6 +24,6 @@ class EmailForm(FlaskForm):
     email = StringField('Email',
                           validators=[Email()])
 
-class ActivationsPUIDForm(FlaskForm):
+class ActivationBysPUIDForm(FlaskForm):
     spuid = StringField('CODICE FISCALE',
                           validators=[InputRequired()])

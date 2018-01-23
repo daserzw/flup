@@ -64,15 +64,19 @@ class Ldapservice():
 
     def _load_user(self, search_result):
         (userdn, ldapentry) = search_result
+        is_activated = False
         mail = None
         if 'mail' in ldapentry:
             mail = ldapentry['mail'][0]
+        if 'userPassword' in ldapentry:
+            is_activated = True
         app.logger.debug("ldapentry: %s", ldapentry)
         user = User(id=userdn,
                     uid=ldapentry['uid'][0],
                     givenName=' '.join(ldapentry['givenName']),
                     sn=' '.join(ldapentry['sn']),
-                    mail=mail
+                    mail=mail,
+                    is_activated=is_activated
         )
         app.logger.debug("returned user: %s", user)
         return user
