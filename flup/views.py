@@ -102,29 +102,45 @@ def reset_pw():
     return render_template('reset_pw.html', form=form)
 
 
-@app.route('/activation', methods=['GET', 'POST'])
+@app.route('/activation', methods=['GET'])
 def activation():
+    if app.config['ACTIVATION_KEY'] == 'spuid':
+        return redirect(url_for('activation_by_spuid'))
+    elif app.config['ACTIVATION_KEY'] == 'email':
+        return redirect(url_for('activation_by_email'))
+    abort(500)
+
+                        
+@app.route('/activation_by_spuid', methods=['GET', 'POST'])
+def activation_by_spuid():
     form = ActivationsPUIDForm()
+    user = None
     if form.validate_on_submit():
         spuid = form.spuid.data
-        user = None
         try:
-            user = ldapservices.get_user_by_attr('schacPersonalUniqueID', spuid)
+            user = ldapservices.get_user_by_attr('schacPersonalUniqueID',
+                                                 spuid)
         except Exception as e:
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
         if user:
             if not user.mail:
                 login_user(user)
-                app.logger.info('Activation request: username %s', user.uid)
+                app.logger.info('Activation request: username %s',
+                                user.uid)
                 return redirect(url_for('activation_mail'))
-        flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale deve essere scritto con lettere maiuscole.'), 'error')
+        flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale' \
+                      'deve essere scritto con lettere maiuscole.'),
+              'error'
+        )
         app.logger.info(
             'Activation request failed: schacPersonalUniqueID %s',
             spuid
         )
-    return render_template('activation.html', form=form)
+    return render_template('activation_by_spuid.html', form=form)
 
+def activation_by_mail():
+    pass
 
 @app.route('/activation_mail', methods=['GET', 'POST'])
 @login_required

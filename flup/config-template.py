@@ -44,3 +44,6 @@ MAIL_SIGNATURE = 'MAIL_SIGNATURE'
 
 # ORGNAME
 ORGNAME = 'Organization Name'
+
+# ACTIVATION_KEY: permitted values ['spuid'|'email']
+ACTIVATION_KEY = 'spuid'
