@@ -124,7 +124,7 @@ def activation_by_spuid():
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
         if user:
-            if not user.mail:
+            if not user.is_activated:
                 login_user(user)
                 app.logger.info('Activation request: username %s',
                                 user.uid)
@@ -139,8 +139,44 @@ def activation_by_spuid():
         )
     return render_template('activation_by_spuid.html', form=form)
 
-def activation_by_mail():
-    pass
+
+@app.route('/activation_by_email', methods=['GET', 'POST'])
+def activation_by_email():
+    form = EmailForm()
+    user = None
+    if form.validate_on_submit():
+        email = form.email.data
+        try:
+            user = ldapservices.get_user_by_attr('mail',
+                                                 email)
+        except Exception as e:
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
+        if user:
+            if not user.is_activated:
+                login_user(user)
+                app.logger.info('Activation request: username %s',
+                                user.uid)
+                if send_mail_op(user, 'IDP - attivazione account', 'activate_op'):
+                    flash(gettext('Messaggio di attivazione inviato.'), 'message')
+                    app.logger.info(
+                        'Activation mail sent: username %s, mail %s',
+                        user.uid,
+                        email
+                    )
+        flash(gettext('Email non valida.'),
+              'error'
+        )
+        app.logger.info(
+            'Activation request failed: schacPersonalUniqueID %s',
+            spuid
+        )
+    else:
+        flash(gettext('Email non valida.'),
+              'error'
+        )        
+    return render_template('activation_by_email.html', form=form)
+
 
 @app.route('/activation_mail', methods=['GET', 'POST'])
 @login_required
@@ -170,6 +206,7 @@ def activation_mail():
                 email
             )
     return render_template('activation_mail.html', form=form, user=user)
+
 
 @app.route('/new_mail', methods=['GET', 'POST'])
 @login_required
@@ -224,19 +261,20 @@ def new_mail_op():
 @login_required
 def activate_op():
     user = current_user
-    app.logger.info('activate_op requested: username %s', user.uid)
-    if set_new_mail(user):
+    if not user.is_activated:
+        app.logger.info('activate_op requested: username %s', user.uid)
+        if not user.mail:
+            set_new_mail(user)
         app.logger.info(
-            'User activated: username %s',
+            'Activating user: username %s',
             user.uid
         )
         return redirect(url_for('change_pw'))
-    else:
-        app.logger.error(
-            'User cannot be activated: username %s',
-            user.uid
-        )
-        abort(500)
+    app.logger.error(
+        'User user %s is already active',
+        user.uid
+    )
+    abort(500)
 
 
 @app.route('/logout')
