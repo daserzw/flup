@@ -14,7 +14,7 @@ class User(UserMixin):
         self.is_activated = is_activated
 
     def __str__(self):
-        return ("id: %s, uid:%s, givenName: %s, sn: %s, mail: %s") % (
+        return ("id: %s, uid:%s, givenName: %s, sn: %s, mail: %s, activated: %s") % (
             self.id,
             self.uid,
             self.givenName,

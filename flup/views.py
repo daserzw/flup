@@ -1,8 +1,8 @@
 # coding=utf-8
 from flup import app, ldapservices, mail_services, db
-from flask import render_template, url_for, redirect, flash, abort, request, g
+from flask import render_template, url_for, redirect, flash, abort, request, g, session
 from model import Token, UserMail, User
-from forms import LoginForm, NewPasswordForm, EmailForm, ActivationsPUIDForm
+from forms import LoginForm, NewPasswordForm, EmailForm, ActivationBysPUIDForm
 from flask_login import login_required, login_user, current_user, logout_user
 from flask_babel import gettext
 
@@ -41,6 +41,7 @@ def password_is_safe(user, password):
         user.sn.lower() not in password.lower()):
         return True
     return False
+
 
 @app.route('/change_pw', methods=['GET', 'POST'])
 @login_required
@@ -113,7 +114,7 @@ def activation():
                         
 @app.route('/activation_by_spuid', methods=['GET', 'POST'])
 def activation_by_spuid():
-    form = ActivationsPUIDForm()
+    form = ActivationBysPUIDForm()
     user = None
     if form.validate_on_submit():
         spuid = form.spuid.data
@@ -125,7 +126,7 @@ def activation_by_spuid():
             abort(500)
         if user:
             if not user.is_activated:
-                login_user(user)
+                session['activating_user_id'] = user.id
                 app.logger.info('Activation request: username %s',
                                 user.uid)
                 return redirect(url_for('activation_mail'))
@@ -144,6 +145,7 @@ def activation_by_spuid():
 def activation_by_email():
     form = EmailForm()
     user = None
+    mail_op_failed = False
     if form.validate_on_submit():
         email = form.email.data
         try:
@@ -154,7 +156,6 @@ def activation_by_email():
             abort(500)
         if user:
             if not user.is_activated:
-                login_user(user)
                 app.logger.info('Activation request: username %s',
                                 user.uid)
                 if send_mail_op(user, 'IDP - attivazione account', 'activate_op'):
@@ -164,24 +165,24 @@ def activation_by_email():
                         user.uid,
                         email
                     )
-        flash(gettext('Email non valida.'),
-              'error'
-        )
-        app.logger.info(
-            'Activation request failed: schacPersonalUniqueID %s',
-            spuid
-        )
-    else:
-        flash(gettext('Email non valida.'),
-              'error'
-        )        
+                else:
+                    mail_op_failed = True
+        if (user==None or user.is_activated or mail_op_failed):
+            flash(gettext('Email non valida.'),
+                  'error'
+            )        
     return render_template('activation_by_email.html', form=form)
 
 
 @app.route('/activation_mail', methods=['GET', 'POST'])
-@login_required
 def activation_mail():
-    user = current_user
+    user = None
+    try: 
+        user = ldapservices.get_user_by_dn(session.get('activating_user_id'))
+    except Exception as e:
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
+            
     form = EmailForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -205,6 +206,7 @@ def activation_mail():
                 user.uid,
                 email
             )
+            session.pop('activating_user_id')
     return render_template('activation_mail.html', form=form, user=user)
 
 
@@ -237,6 +239,7 @@ def new_mail():
         )
         return redirect(url_for('user_menu'))
     return render_template('new_mail.html', form=form, user=user)
+
 
 @app.route('/new_mail_op', methods=['GET', 'POST'])
 @login_required
@@ -341,6 +344,7 @@ def send_mail_op(user, subject, op):
         app.logger.error('MAIL Exception: %s', e)
         abort(500)
     return True
+
 
 def set_new_mail(user):
     user_mail = UserMail.query.filter_by(user_id=user.id).order_by(UserMail.id.desc()).first()

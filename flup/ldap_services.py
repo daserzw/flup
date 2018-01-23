@@ -64,6 +64,7 @@ class Ldapservice():
 
     def _load_user(self, search_result):
         (userdn, ldapentry) = search_result
+        is_activated = False
         mail = None
         if 'mail' in ldapentry:
             mail = ldapentry['mail'][0]
