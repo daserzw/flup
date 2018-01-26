@@ -130,12 +130,17 @@ def activation_by_spuid():
                 app.logger.info('Activation request: username %s',
                                 user.uid)
                 return redirect(url_for('activation_mail'))
-        flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale' \
-                      'deve essere scritto con lettere maiuscole.'),
-              'error'
-        )
+            else:
+                flash(gettext('Operazione non disponibile.'),
+                      'error'
+                )
+        else:
+            flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale' \
+                          'deve essere scritto con lettere maiuscole.'),
+                  'error'
+            )
         app.logger.info(
-            'Activation request failed: schacPersonalUniqueID %s',
+            'Activation by sPUID request failed: schacPersonalUniqueID %s',
             spuid
         )
     return render_template('activation_by_spuid.html', form=form)
@@ -166,11 +171,26 @@ def activation_by_email():
                         email
                     )
                 else:
-                    mail_op_failed = True
-        if (user==None or user.is_activated or mail_op_failed):
+                    flash(gettext('Email non valida.'),
+                          'error'
+                    )
+                    app.logger.info(
+                        'Activation by email request failed: email %s',
+                        email
+                    )
+                    return render_template('activation_by_email.html', form=form)
+            else:
+                flash(gettext('Operazione non disponibile.'),
+                      'error'
+                )
+        else:
             flash(gettext('Email non valida.'),
                   'error'
-            )        
+            )
+        app.logger.info(
+            'Activation by email request failed: email %s',
+            email
+        )
     return render_template('activation_by_email.html', form=form)
 
 

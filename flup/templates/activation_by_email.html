@@ -1,4 +1,7 @@
 {% extends "/layout.html" %} {% block main %}
+    <p>{{ _("Per attivare il tuo account inserisci l'indirizzo email
+      che hai comunicato all'amministratore.") }}
+    </p>
     <form method="POST" action="{{ url_for('activation_by_email') }}">
       {{ form.csrf_token }}
     <div class="row">
@@ -12,6 +15,6 @@
 	{% endif %}
       </div>
     </div>
-      <button type="submit" class="btn btn-primary">Attiva l'account</button>
+      <button type="submit" class="btn btn-primary">Invia il link di attivazione</button>
     </form>
 {% endblock %}
