@@ -1,5 +1,5 @@
 {% extends "/layout.html" %} {% block main %}
-    <h2>{{ _("Salve") }} {{ user.givenName }} {{ user.sn }}</h2>
+    <h2>{{ _("Salve") }} {{ user.givenName|capitalize() }} {{ user.sn|capitalize() }}</h2>
     <p>{{ _("Imposta il tuo nuovo indirizzo email personale, su cui invieremo
              una messaggio di verifica. Segui il collegamento nel messaggio
              per completare la procedura.") }}</p>
