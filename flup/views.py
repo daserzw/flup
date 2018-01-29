@@ -371,7 +371,6 @@ def send_mail_op(user, subject, op):
     return True
 
 
-<<<<<<< HEAD
 def send_mail_activated(user):
     user.flupurl = app.config['IDP_BASE_URL']+'/flup'
     body = render_template(
