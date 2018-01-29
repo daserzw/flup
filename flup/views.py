@@ -2,7 +2,7 @@
 from flup import app, ldapservices, mail_services, db
 from flask import render_template, url_for, redirect, flash, abort, request, g, session
 from model import Token, UserMail, User
-from forms import LoginForm, NewPasswordForm, EmailForm, ActivationsPUIDForm
+from forms import LoginForm, NewPasswordForm, EmailForm, ActivationBysPUIDForm
 from flask_login import login_required, login_user, current_user, logout_user
 from flask_babel import gettext
 
@@ -107,34 +107,106 @@ def reset_pw():
     return render_template('reset_pw.html', form=form)
 
 
-@app.route('/activation', methods=['GET', 'POST'])
+@app.route('/activation', methods=['GET'])
 def activation():
-    form = ActivationsPUIDForm()
+    if app.config['ACTIVATION_KEY'] == 'spuid':
+        return redirect(url_for('activation_by_spuid'))
+    elif app.config['ACTIVATION_KEY'] == 'email':
+        return redirect(url_for('activation_by_email'))
+    abort(500)
+
+                        
+@app.route('/activation_by_spuid', methods=['GET', 'POST'])
+def activation_by_spuid():
+    form = ActivationBysPUIDForm()
+    user = None
     if form.validate_on_submit():
         spuid = form.spuid.data
-        user = None
         try:
-            user = ldapservices.get_user_by_attr('schacPersonalUniqueID', spuid)
+            user = ldapservices.get_user_by_attr('schacPersonalUniqueID',
+                                                 spuid)
         except Exception as e:
             app.logger.error('LDAP Exception: %s', e)
             abort(500)
         if user:
-            if not user.mail:
-                login_user(user)
-                app.logger.info('Activation request: username %s', user.uid)
+            if not user.is_activated:
+                session['activating_user_id'] = user.id
+                app.logger.info('Activation request: username %s',
+                                user.uid)
                 return redirect(url_for('activation_mail'))
-        flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale deve essere scritto con lettere maiuscole.'), 'error')
+            else:
+                flash(gettext('Operazione non disponibile.'),
+                      'error'
+                )
+        else:
+            flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale ' \
+                          'deve essere scritto con lettere maiuscole.'),
+                  'error'
+            )
         app.logger.info(
-            'Activation request failed: schacPersonalUniqueID %s',
+            'Activation by sPUID request failed: schacPersonalUniqueID %s',
             spuid
         )
-    return render_template('activation.html', form=form)
+    return render_template('activation_by_spuid.html', form=form)
+
+
+@app.route('/activation_by_email', methods=['GET', 'POST'])
+def activation_by_email():
+    form = EmailForm()
+    user = None
+    mail_op_failed = False
+    if form.validate_on_submit():
+        email = form.email.data
+        try:
+            user = ldapservices.get_user_by_attr('mail',
+                                                 email)
+        except Exception as e:
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
+        if user:
+            if not user.is_activated:
+                app.logger.info('Activation request: username %s',
+                                user.uid)
+                if send_mail_op(user, 'IDP - attivazione account', 'activate_op'):
+                    flash(gettext('Messaggio di attivazione inviato.'), 'message')
+                    app.logger.info(
+                        'Activation mail sent: username %s, mail %s',
+                        user.uid,
+                        email
+                    )
+                else:
+                    flash(gettext('Email non valida.'),
+                          'error'
+                    )
+                    app.logger.info(
+                        'Activation by email request failed: email %s',
+                        email
+                    )
+                    return render_template('activation_by_email.html', form=form)
+            else:
+                flash(gettext('Operazione non disponibile.'),
+                      'error'
+                )
+        else:
+            flash(gettext('Email non valida.'),
+                  'error'
+            )
+        app.logger.info(
+            'Activation by email request failed: email %s',
+            email
+        )
+    return render_template('activation_by_email.html', form=form)
 
 
 @app.route('/activation_mail', methods=['GET', 'POST'])
-@login_required
 def activation_mail():
-    user = current_user
+    user = None
+    try: 
+        user = ldapservices.get_user_by_dn(session.get('activating_user_id'))
+    except Exception as e:
+            app.logger.error('LDAP Exception: %s', e)
+            abort(500)
+            
     form = EmailForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -158,7 +230,9 @@ def activation_mail():
                 user.uid,
                 email
             )
+            session.pop('activating_user_id')
     return render_template('activation_mail.html', form=form, user=user)
+
 
 @app.route('/new_mail', methods=['GET', 'POST'])
 @login_required
@@ -190,6 +264,7 @@ def new_mail():
         return redirect(url_for('user_menu'))
     return render_template('new_mail.html', form=form, user=user)
 
+
 @app.route('/new_mail_op', methods=['GET', 'POST'])
 @login_required
 def new_mail_op():
@@ -213,16 +288,18 @@ def new_mail_op():
 @login_required
 def activate_op():
     user = current_user
-    app.logger.info('activate_op requested: username %s', user.uid)
-    if set_new_mail(user):
+    if not user.is_activated:
+        app.logger.info('activate_op requested: username %s', user.uid)
+        if not user.mail:
+            set_new_mail(user)
         app.logger.info(
-            'User activated: username %s',
+            'Activating user: username %s',
             user.uid
         )
         session['activate'] = 1
         return redirect(url_for('change_pw'))
     app.logger.error(
-        'User cannot be activated: username %s',
+        'User user %s is already active',
         user.uid
     )
     abort(500)
@@ -294,6 +371,7 @@ def send_mail_op(user, subject, op):
     return True
 
 
+<<<<<<< HEAD
 def send_mail_activated(user):
     user.flupurl = app.config['IDP_BASE_URL']+'/flup'
     body = render_template(
@@ -316,6 +394,7 @@ def send_mail_activated(user):
         app.logger.error('MAIL Exception: %s', e)
         abort(500)
     return True
+
 
 def set_new_mail(user):
     user_mail = UserMail.query.filter_by(user_id=user.id).order_by(UserMail.id.desc()).first()

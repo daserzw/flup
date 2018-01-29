@@ -2,8 +2,8 @@
 {% block main %}
     <h2>Dati Utente</h2>
       <ul>
-        <li>Nome: {{ user.givenName }}</li>
-        <li>Cognome: {{ user.sn }}</li>
+        <li>Nome: {{ user.givenName|capitalize() }}</li>
+        <li>Cognome: {{ user.sn|capitalize() }}</li>
         <li>Email: {{ user.mail }}</li>
         <li>Nome utente: {{ user.uid }}</li>
       </ul>
