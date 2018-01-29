@@ -135,7 +135,7 @@ def activation_by_spuid():
                       'error'
                 )
         else:
-            flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale' \
+            flash(gettext('Codice Fiscale non valido. Attenzione il codice fiscale ' \
                           'deve essere scritto con lettere maiuscole.'),
                   'error'
             )
