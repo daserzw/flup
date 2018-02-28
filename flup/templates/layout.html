@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 {% block title %}
-{{ config['ORGNAME'] }} - Gestione Account
+{{ config['ORGNAME'] | safe }} - Gestione Account
 {% endblock%}
 {% block head %}
 {{ super() }}
@@ -51,7 +51,7 @@
   </div>
     <footer class="footer">
       <div class="container">
-      <p class="footer-text">{{ config['ORGNAME'] }} - IDEM GARR AAI</p>
+      <p class="footer-text">{{ config['ORGNAME'] | safe }} - IDEM GARR AAI</p>
       </div>
     </footer>
 {% endblock %}
