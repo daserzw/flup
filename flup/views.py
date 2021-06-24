@@ -1,8 +1,8 @@
 # coding=utf-8
 from flup import app, ldapservices, mail_services, db
 from flask import render_template, url_for, redirect, flash, abort, request, g, session
-from model import Token, UserMail, User
-from forms import LoginForm, NewPasswordForm, EmailForm, ActivationBysPUIDForm
+from flup.model import Token, UserMail, User
+from flup.forms import LoginForm, NewPasswordForm, EmailForm, ActivationBysPUIDForm
 from flask_login import login_required, login_user, current_user, logout_user
 from flask_babel import gettext
 
