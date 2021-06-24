@@ -5,7 +5,7 @@ from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_babel import Babel
-from ldapconn import Ldapconn
+from flup.ldapconn import Ldapconn
 import logging
 
 log_formatter = logging.Formatter(
@@ -28,7 +28,7 @@ ldapconn = Ldapconn(
 for handler in app.logger.handlers:
     handler.setFormatter(log_formatter)
 
-from ldap_services import Ldapservice
+from flup.ldap_services import Ldapservice
 
 ldapservices = Ldapservice(ldapconn.getLdapobj,
                           app.config['LDAPURI'],

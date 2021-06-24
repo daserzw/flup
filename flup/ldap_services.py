@@ -1,5 +1,5 @@
 import ldap
-from model import User
+from flup.model import User
 from flup import app
 
 class Ldapservice():
@@ -67,14 +67,14 @@ class Ldapservice():
         is_activated = False
         mail = None
         if 'mail' in ldapentry:
-            mail = ldapentry['mail'][0]
+            mail = ldapentry['mail'][0].decode('utf-8')
         if 'userPassword' in ldapentry:
             is_activated = True
-        app.logger.debug("ldapentry: %s", ldapentry)
+        app.logger.debug("userdn: %s\nldapentry: %s" % (userdn,ldapentry))
         user = User(id=userdn,
-                    uid=ldapentry['uid'][0],
-                    givenName=' '.join(ldapentry['givenName']),
-                    sn=' '.join(ldapentry['sn']),
+                    uid=ldapentry['uid'][0].decode('utf-8'),
+                    givenName=ldapentry['givenName'][0].decode('utf-8'),
+                    sn=ldapentry['sn'][0].decode('utf-8'),
                     mail=mail,
                     is_activated=is_activated
         )
@@ -114,12 +114,12 @@ class Ldapservice():
         except Exception as e:
             if e == ldap.NO_SUCH_ATTRIBUTE:
                 pass
-        mod_attrs = [(ldap.MOD_ADD, 'mail', [str(newmail)])]
+        mod_attrs = [(ldap.MOD_ADD, 'mail', [newmail.encode('utf-8')])]
         ldapobj.modify_s(user.id, mod_attrs)
         return True
         
     def user_bind(self, userdn, password):
-        user_ldapobj = ldap.initialize(self.LDAPURI)
+        user_ldapobj = ldap.initialize(self.LDAPURI, bytes_mode=False)
         try:
             user_ldapobj.bind_s(userdn, password, ldap.AUTH_SIMPLE)
         except ldap.INVALID_CREDENTIALS:
